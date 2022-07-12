@@ -10,7 +10,7 @@
 -author("yuri").
 
 %% API
--export([]).
+-export([start/1]).
 
 start(Key)->
   cs_loop(Key,"helloNode@localhost").
@@ -18,7 +18,7 @@ start(Key)->
 
 cs_loop(Key,Worker) ->
   receive
-    {From, Msg_id, {vote, Sign,Payload} } ->
+    {_, _, {vote, Sign,Payload} } ->
       Ok= crypto:verify(ecdsa,sha256,Payload, Sign,Key),
       if Ok==true -> Worker ! {self(), Payload};
         true-> io:format("\n Not valid sign \n\n")
