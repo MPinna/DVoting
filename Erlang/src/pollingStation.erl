@@ -23,5 +23,5 @@ start(Cs)->
 ps_loop(Key, Cs) ->
   Term = io:get_chars("prompt ", 5),
   Signature = public_key:sign(Term, sha256, Key),
-  Cs ! {self(), Signature, Term}.
-  %% ps_loop(Key, Cs).
+  Cs ! {self(), Signature, Term},
+  ps_loop(Key, Cs).

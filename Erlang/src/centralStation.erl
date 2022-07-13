@@ -31,7 +31,8 @@ cs_loop(Key) ->
       if Ok==true ->io:format("\n Valid sign \n\n");
         true-> io:format("\n Not valid sign \n\n")
         end,
-      cs_loop(key);
+      {javaMbox, javaNode@localhost}! {self(), Payload},
+      cs_loop(Key);
     _ -> io:format("~n watherver ~n"),
-      cs_loop(key)
+      cs_loop(Key)
   end.

@@ -20,21 +20,30 @@ public class App
             cookie = args[1];
             mBox = args[2];
         } else {
-            nodeId = "helloNode@localhost";
+            nodeId = "javaNode@localhost";
             cookie = "abcde";
-            mBox = "hello";
+            mBox = "javaMbox";
         }
         OtpNode otpNode = new OtpNode(nodeId, cookie);
         OtpMbox otpMbox = otpNode.createMbox(mBox);
         System.out.println("The server " + nodeId + " is running.");
         System.out.println("cookie: " + cookie);
         System.out.println("TmBox: " + mBox);
+        if (otpNode.ping("shell@localhost", 2000)) {
+            System.out.println("shell@localhost is up.");
+        } else {
+            System.out.println("shell@localhost is down");
+        }
+
         OtpErlangObject message = otpMbox.receive();
         System.out.println("message " + message);
         if (message instanceof OtpErlangTuple){
             OtpErlangTuple erlangTuple = (OtpErlangTuple) message;
             OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
-            OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
+            //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
+            OtpErlangString payload = (OtpErlangString) erlangTuple.elementAt(1);
+            //String output=new String(payload.binaryValue());
+            System.out.println("output " + payload);
             // frobincate
             // ..
 
