@@ -19,9 +19,14 @@ start(Cs)->
   Key = public_key:pem_entry_decode(DSAEntry),
   ps_loop(Key, Cs).
 
+ps_eval(Key,Cs, Term)->
+  Signature = public_key:sign(Term, sha256, Key),
+  Cs ! {self(), Signature, Term}.
 
 ps_loop(Key, Cs) ->
-  Term = io:get_chars("prompt ", 5),
-  Signature = public_key:sign(Term, sha256, Key),
-  Cs ! {self(), Signature, Term},
-  ps_loop(Key, Cs).
+  %%Term = io:get_chars("prompt ", 5),
+  receive
+    {_, ok} ->ps_loop(Key, Cs);
+    {_, Payload} -> ps_eval(Key,Cs,Payload),
+      ps_loop(Key, Cs)
+  end.

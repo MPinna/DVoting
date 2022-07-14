@@ -10,9 +10,16 @@ import java.io.PrintWriter;
 public class PollingStationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String message = "<html><body><h1> JAVA </h1></body></html>";
+
         PrintWriter writer = response.getWriter();
+        String message = "<html><body><h1> JAVA </h1></body></html>";
+        Network n=new Network(request.getSession().getId());
+        if(n.test())
+            message = "<html><body><h1> OK </h1></body></html>";
+        else
+            message = "<html><body><h1> NOPE </h1></body></html>";
         writer.write(message);
+        n.send("provaoeoeoeoeo");
         writer.close();
     }
 

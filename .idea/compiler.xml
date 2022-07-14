@@ -7,10 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="WebApp" />
-        <module name="crypto" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="crypto" target="1.7" />
       <module name="untitled" target="1.5" />
     </bytecodeTargetLevel>
   </component>
