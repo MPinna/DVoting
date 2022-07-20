@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="cryptoLib">
+    <CLASSES />
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/cryptoLib" />
+    </SOURCES>
+  </library>
+</component>

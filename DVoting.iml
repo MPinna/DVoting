@@ -6,5 +6,6 @@
       <excludeFolder url="file://$MODULE_DIR$/diagrams" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="cryptoLib" level="project" />
   </component>
 </module>
