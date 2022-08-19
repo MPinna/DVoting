@@ -4,7 +4,7 @@
     <module name="WebApp" />
     <extension name="coverage">
       <pattern>
-        <option name="PATTERN" value="it.unipi.dsmt.DVoting.*" />
+        <option name="PATTERN" value="it.unipi.dsmt.DVoting.network.*" />
         <option name="ENABLED" value="true" />
       </pattern>
     </extension>

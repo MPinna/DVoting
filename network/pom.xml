@@ -5,24 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>it.unipi.dsmt.DVoting</groupId>
-    <artifactId>crypto</artifactId>
-    <packaging>jar</packaging>
+    <artifactId>network</artifactId>
     <version>1.0-SNAPSHOT</version>
-
     <dependencies>
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.71</version>
+            <groupId>com.ericsson.otp.erlang</groupId>
+            <artifactId>jinterface</artifactId>
+            <version>1.13</version>
             <scope>compile</scope>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk18on</artifactId>
-            <version>1.71</version>
-        </dependency>
-
     </dependencies>
 
     <properties>

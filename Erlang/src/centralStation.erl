@@ -13,10 +13,19 @@
 -export([start/0, test/0]).
 
 start()->
-  {ok, PemBin} = file:read_file("../../Resources/pubkey.pem"),
-  [Entry] = public_key:pem_decode(PemBin),
-  PublicKey=public_key:pem_entry_decode(Entry),
-  cs_loop(PublicKey).
+  %{ok, PemBin} = file:read_file("../../resources/ps_keys/ps1_cert.pem"),
+  %[Entry] = public_key:pem_decode(PemBin),
+  %{_, DerCert, _} = Entry,
+  %Decoded=public_key:pkix_decode_cert(DerCert, otp),
+  %PublicKey =
+  %  Decoded#'OTPCertificate'.tbsCertificate#
+  %    'OTPTBSCertificate'.subjectPublicKeyInfo#
+  %      'OTPSubjectPublicKeyInfo'.subjectPublicKey,
+  io:format("cs loop started ~n"),
+  {ok, Bin} = file:read_file("../../resources/ps_keys/ps1_public.pem"),
+  [DSAEntry] = public_key:pem_decode(Bin),
+  Key = public_key:pem_entry_decode(DSAEntry),
+  cs_loop(Key).
 
 test()->
   io:format("\n TEST \n\n"),
@@ -26,13 +35,17 @@ test()->
 cs_loop(Key) ->
   receive
     {_, Sign,Payload} ->
-      io:format("\n received \n\n"),
+      io:format("\n received \n"),
       Ok= public_key:verify(Payload,sha256, Sign,Key),
-      if Ok==true ->io:format("\n Valid sign \n\n");
+      io:format(base64:encode_to_string(Sign)),
+      %Ok= crypto:verify(dss,sha256, Payload,Sign,Key),
+      if Ok==true ->io:format("\n Valid sign \n\n"),
+        {cs, central@localhost}! {self(), Payload};
         true-> io:format("\n Not valid sign \n\n")
         end,
-      {javaMbox, javaNode@localhost}! {self(), Payload},
+
       cs_loop(Key);
-    _ -> io:format("~n watherver ~n"),
+    _ -> io:format("~n watherver cs ~n"),
       cs_loop(Key)
-  end.
+  end,
+ io:format("\n end \n\n").

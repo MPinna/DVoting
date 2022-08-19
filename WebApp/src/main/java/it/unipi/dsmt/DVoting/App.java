@@ -3,7 +3,7 @@ package it.unipi.dsmt.DVoting;
 import com.ericsson.otp.erlang.*;
 
 import java.io.IOException;
-import it.unipi.dsmt.DVoting.crypto.*;
+
 
 /**
  * Hello world!

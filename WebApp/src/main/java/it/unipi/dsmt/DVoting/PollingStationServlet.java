@@ -1,10 +1,16 @@
 package it.unipi.dsmt.DVoting;
 
+import it.unipi.dsmt.DVoting.crypto.Crypto;
+import it.unipi.dsmt.DVoting.network.Network;
+
 import javax.servlet.*;
 import javax.servlet.http.*;
 import javax.servlet.annotation.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 @WebServlet(name = "PollingStationServlet", value = "/PollingStationServlet")
 public class PollingStationServlet extends HttpServlet {
@@ -15,11 +21,23 @@ public class PollingStationServlet extends HttpServlet {
         String message = "<html><body><h1> JAVA </h1></body></html>";
         Network n=new Network(request.getSession().getId());
         if(n.test())
-            message = "<html><body><h1> OK </h1></body></html>";
+            message = "<h1> OK </h1>";
         else
-            message = "<html><body><h1> NOPE </h1></body></html>";
+            message = "<h1> NOPE </h1>";
         writer.write(message);
-        n.send("provaoeoeoeoeo");
+        PublicKey pk;
+        try {
+            String filePath=this.getClass().
+                    getResource("/cs_keys/cs_cert.pem").getPath();
+            pk= Crypto.getPublicKeyFromCertificate(filePath);
+        } catch (FileNotFoundException e) {
+            writer.write("<h1> wrong key </h1>");
+            return;
+        }
+        writer.write("<h1> ok key </h1>");
+        byte[] cph=Crypto.encrypt(pk, "provaeoeoeoe".getBytes());
+        n.sendBytes(cph);
+        //n.send("boooooooooooo");
         writer.close();
     }
 

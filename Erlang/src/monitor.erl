@@ -14,7 +14,8 @@
 
 startServices()->
   Pid=spawn(centralStation,start,[]),
+  register(central_station_endpoint, Pid),
   PsPid=spawn(pollingStation,start,[Pid]),
-  register(pollingStation, PsPid).
+  register(polling_station_endpoint, PsPid).
 
 
