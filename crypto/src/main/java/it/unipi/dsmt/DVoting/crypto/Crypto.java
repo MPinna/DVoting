@@ -20,6 +20,8 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.spec.ECGenParameterSpec;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.Random;
 
 public  class Crypto {
@@ -29,9 +31,19 @@ public  class Crypto {
 
 
         KeyPair kp=generateECKeys();
-        byte[] cp= encrypt(kp.getPublic(), "eoeoeoooeoeo".getBytes());
-        byte[] pl=decrypt(kp.getPrivate(), cp);
-        System.out.println("plaintext: "+new String(pl));
+        assert kp != null;
+
+        for (int i = 0; i < 2; i++) { // verify randomization
+            byte[] cp= encrypt(kp.getPublic(), "eoeoeoooeoeo".getBytes());
+            System.out.println("ciphertext: "+new String(Base64.getEncoder().encode(cp)));
+            byte[] pl=decrypt(kp.getPrivate(), cp);
+            System.out.println("plaintext: "+new String(pl));
+
+            byte[] s=sign(kp.getPrivate(),"eoeoeoeoeoe".getBytes());
+            System.out.println("sign: "+ new String(Base64.getEncoder().encode(s)));
+            System.out.println((verify(kp.getPublic(),s,"eoeoeoeoeoe".getBytes())));
+        }
+
 
 
     }
@@ -39,6 +51,7 @@ public  class Crypto {
     static final String EC_CURVE="secp256r1";
     //static final String CYPHER="ECIES";
     static final String CYPHER="ECIESwithAES-CBC";
+    static final String SIGNATURE="SHA256withECDSA";
 
 
     public static KeyPair generateECKeys() {
@@ -96,6 +109,30 @@ public  class Crypto {
         }
     }
 
+    public static byte[] sign(PrivateKey private_key, byte[] msg) {
+        try {
+            Signature s = Signature.getInstance(SIGNATURE);
+            s.initSign(private_key);
+            s.update(msg);
+            return s.sign();
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean verify(PublicKey publicKey, byte[] signed, byte[] msg)  {
+        Signature signature = null;
+        try {
+            signature = Signature.getInstance(SIGNATURE);
+            signature.initVerify(publicKey);
+            signature.update(msg);
+            return signature.verify(signed);
+        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
     public static PrivateKey getPrivateKey(String filePath, String password) throws FileNotFoundException {
         File privateKeyFile = new File(filePath); // private key file in PEM format
         PEMParser pemParser = new PEMParser(new FileReader(privateKeyFile));
