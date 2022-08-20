@@ -15,19 +15,14 @@ public class Network {
     String pollingStationMbox = "polling_station_endpoint";
     String pollingStationNode = "server@localhost";
 
-    public Network(String name) {
-        try {
+    public Network(String name) throws IOException {
+
             if(otpNode==null) {
                 otpNode = new OtpNode(nodeId, cookie);
                 otpMbox = otpNode.createMbox(name);
                 System.out.println(otpMbox.getName());
             }
 
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public Network(String name, String nodeId, String cookie) {

@@ -9,6 +9,7 @@ import javax.servlet.annotation.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -16,10 +17,17 @@ import java.security.PublicKey;
 public class PollingStationServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        System.out.println("DoGet PollingStation");
         PrintWriter writer = response.getWriter();
         String message = "<html><body><h1> JAVA </h1></body></html>";
-        Network n=new Network(request.getSession().getId());
+        Network n;
+        try {
+            n=new Network(request.getSession().getId());
+        }catch (IOException e){
+            return;
+        }
+
+
         if(n.test())
             message = "<h1> OK </h1>";
         else
@@ -43,6 +51,9 @@ public class PollingStationServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+        System.out.println("DoPost PollingStation");
+        String vote = request.getParameter("vote");
+        PrintWriter writer = response.getWriter();
+        writer.println(vote);
     }
 }
