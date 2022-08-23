@@ -15,31 +15,34 @@ public class Network {
     String pollingStationMbox = "polling_station_endpoint";
     String pollingStationNode = "server@localhost";
 
+    /**
+     * Network class constructor
+     * @param name the Mbox name (must be unique for each Mbox)
+     * @throws IOException if network can't be created
+     */
     public Network(String name) throws IOException {
 
-            if(otpNode==null) {
-                otpNode = new OtpNode(nodeId, cookie);
-                otpMbox = otpNode.createMbox(name);
-                System.out.println(otpMbox.getName());
-            }
+        if(otpNode==null) {
+            otpNode = new OtpNode(nodeId, cookie);
+            otpMbox = otpNode.createMbox(name);
+            System.out.println(otpMbox.getName());
+        }
 
     }
 
-    public Network(String name, String nodeId, String cookie) {
+    /**
+     * Network class constructor
+     * @param name the Mbox name (must be unique for each Mbox)
+     * @param nodeId id od the current node
+     * @param cookie the cookie for the Mbox
+     * @throws IOException if network can't be created
+     */
+    public Network(String name, String nodeId, String cookie) throws IOException {
         this.nodeId = nodeId;
         this.cookie = cookie;
-        try {
-
-            if(otpNode==null) {
-                otpNode = new OtpNode(nodeId, cookie);
-                otpMbox = otpNode.createMbox(name);
-            }
-
-
-
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(otpNode==null) {
+            otpNode = new OtpNode(nodeId, cookie);
+            otpMbox = otpNode.createMbox(name);
         }
     }
 
@@ -49,7 +52,7 @@ public class Network {
         return otpNode.ping(pollingStationNode, 2000);
     }
 
-    public void send(String message) {
+    public void sendString(String message) {
         OtpErlangString msg = new OtpErlangString(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
@@ -92,6 +95,10 @@ public class Network {
 
     }
 
+    /**
+     * receive a signed message in binary format
+     * @return 2 arrays of bytes in a list, the 1st is the message, the 2nd is the sign
+     */
     public List<byte[]> receiveSigned() {
         List<byte[]> res=new ArrayList<>(2);
         while (true) {
