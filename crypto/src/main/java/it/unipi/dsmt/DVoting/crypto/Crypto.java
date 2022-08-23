@@ -22,6 +22,7 @@ import java.security.cert.CertificateException;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Objects;
 import java.util.Random;
 
 public  class Crypto {
@@ -49,7 +50,7 @@ public  class Crypto {
     }
     //static final String EC_CURVE="brainpoolP384r1";
     static final String EC_CURVE="secp256r1";
-    //static final String CYPHER="ECIES";
+    static final String ALGORITHM="ECIES";
     static final String CYPHER="ECIESwithAES-CBC";
     static final String SIGNATURE="SHA256withECDSA";
 
@@ -58,7 +59,7 @@ public  class Crypto {
         try {
             Security.addProvider(new BouncyCastleProvider());
 
-            KeyPairGenerator ecKeyGen = KeyPairGenerator.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
+            KeyPairGenerator ecKeyGen = KeyPairGenerator.getInstance(ALGORITHM, BouncyCastleProvider.PROVIDER_NAME);
             ecKeyGen.initialize(new ECGenParameterSpec(EC_CURVE), new SecureRandom());
 
             return  ecKeyGen.generateKeyPair();
@@ -69,6 +70,13 @@ public  class Crypto {
         }
     }
 
+    /**
+     * encrypt bytes with digital envelope Elliptic Curve Asymmetric Encryption
+     * with AES-CBC and a 16 byte random IV
+     * @param public_key
+     * @param plaintext
+     * @return
+     */
     public static byte[] encrypt(PublicKey public_key, byte[] plaintext) {
         byte[] iv =new byte[16];
         Security.addProvider(new BouncyCastleProvider());
@@ -120,15 +128,16 @@ public  class Crypto {
         }
     }
 
-    public static boolean verify(PublicKey publicKey, byte[] signed, byte[] msg)  {
+    public static boolean verify(PublicKey publicKey, byte[] sign, byte[] msg)  {
         Signature signature = null;
         try {
             signature = Signature.getInstance(SIGNATURE);
             signature.initVerify(publicKey);
             signature.update(msg);
-            return signature.verify(signed);
+            return signature.verify(sign);
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return false;
         }
 
 
@@ -214,4 +223,18 @@ public  class Crypto {
         }
 
     }
+
+    public static PublicKey getCsPublicKeyFromCertificate(){
+        String filePath= Objects.requireNonNull(Crypto.class.getResource("/cs_keys/cs_cert.pem")).getPath();
+        try {
+            return getPublicKeyFromCertificate(filePath);
+        } catch (FileNotFoundException e) {
+            return null;
+        }
+    }
+
+    public static boolean verifyCs(byte[] sign, byte[] msg)  {
+        return verify(getCsPublicKeyFromCertificate(),sign,msg);
+    }
+
 }
