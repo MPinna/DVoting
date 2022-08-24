@@ -22,8 +22,10 @@ start(Cs)->
   ps_loop(Key, Cs).
 
 ps_eval(Key,Cs, Term)->
+  % TODO verify voter sing and set flag into database
   Signature = public_key:sign(Term, sha256, Key),
   %Signature = crypto:sign(dss, sha256,Term, Key),
+  % TODO send acknowledge to sender node
   Cs ! {self(), Signature, Term}.
 
 ps_loop(Key, Cs) ->

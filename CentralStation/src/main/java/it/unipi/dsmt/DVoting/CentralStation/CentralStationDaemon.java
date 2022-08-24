@@ -5,6 +5,7 @@ import it.unipi.dsmt.DVoting.network.Network;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -23,7 +24,12 @@ public class CentralStationDaemon {
             cookie = "abcde";
             mBox = "cs";
         }
-        Network n=new Network(mBox, nodeId, cookie);
+        Network n= null;
+        try {
+            n = new Network(mBox, nodeId, cookie);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         System.out.println("The server " + nodeId + " is running.");
         System.out.println("cookie: " + cookie);
         System.out.println("TmBox: " + mBox);

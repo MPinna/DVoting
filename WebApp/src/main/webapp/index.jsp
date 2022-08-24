@@ -6,5 +6,6 @@
 </head>
 <body>
 <a href="PollingStationServlet"> link</a>
+<!-- TODO add login phase with private key upload -->
 </body>
 </html>
