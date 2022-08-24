@@ -1,3 +1,5 @@
+package it.unipi.dsmt.DVoting;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -18,12 +20,12 @@ public class Candidates {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        n.sendString("request_candidates");
+        n.sendAtomToCentralStation("request_candidates");
         List<byte[]> signed_msg= n.receiveSigned();
 
-        if(!Crypto.verifyCs(signed_msg.get(1), signed_msg.get(0)))
+        if(!Crypto.verifyCs(signed_msg.get(0), signed_msg.get(1)))
             return null;
-        String list= new String(signed_msg.get(0));
+        String list= new String(signed_msg.get(1));
         candidates=Arrays.asList(list.split("_"));
         return candidates;
 

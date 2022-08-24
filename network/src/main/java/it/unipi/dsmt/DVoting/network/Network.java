@@ -8,12 +8,15 @@ import java.util.List;
 
 
 public class Network {
+
     String nodeId = "senderNode@localhost";
     String cookie = "abcde";
     static OtpNode otpNode;
     static OtpMbox otpMbox;
     String pollingStationMbox = "polling_station_endpoint";
+    String centralStationMbox = "central_station_endpoint";
     String pollingStationNode = "server@localhost";
+    String centralStationNode = "server@localhost";
 
     /**
      * Network class constructor
@@ -59,6 +62,35 @@ public class Network {
         otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 
+    public void sendStringToCentralStation(String message) {
+        OtpErlangString msg = new OtpErlangString(message);
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(), msg});
+        otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
+    }
+
+    public void sendAtomToCentralStation(String message) {
+        OtpErlangAtom msg = new OtpErlangAtom(message);
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(), msg});
+        otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
+    }
+
+
+    public void sendBytes(byte[] message) {
+        OtpErlangBinary msg = new OtpErlangBinary(message);
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(), msg});
+        otpMbox.send("polling_station_endpoint", pollingStationNode,  msgTuple);
+    }
+
+    public void sendSigned(byte[] message, byte[] sign) {
+        OtpErlangBinary msg = new OtpErlangBinary(message);
+        OtpErlangBinary s = new OtpErlangBinary(sign);
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(), msg, s});
+        otpMbox.send("polling_station_endpoint", pollingStationNode,  msgTuple);
+    }
     public String receiveString() {
         String res = null;
         while (true) {
@@ -109,8 +141,8 @@ public class Network {
                     continue;
                 OtpErlangBinary msg = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangBinary s = (OtpErlangBinary) erlangTuple.elementAt(2);
-                res.set(1,msg.binaryValue());
-                res.set(2,s.binaryValue());
+                res.add(msg.binaryValue());
+                res.add(s.binaryValue());
                 return res;
 
             } catch (OtpErlangDecodeException | OtpErlangExit | ClassCastException ignored) {
@@ -119,19 +151,5 @@ public class Network {
 
     }
 
-    public void sendBytes(byte[] message) {
-        OtpErlangBinary msg = new OtpErlangBinary(message);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg});
-        otpMbox.send("polling_station_endpoint", pollingStationNode,  msgTuple);
-    }
-
-    public void sendSigned(byte[] message, byte[] sign) {
-        OtpErlangBinary msg = new OtpErlangBinary(message);
-        OtpErlangBinary s = new OtpErlangBinary(sign);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg, s});
-        otpMbox.send("polling_station_endpoint", pollingStationNode,  msgTuple);
-    }
 }
 

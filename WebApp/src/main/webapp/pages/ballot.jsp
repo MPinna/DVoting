@@ -1,5 +1,6 @@
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %><%--
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="it.unipi.dsmt.DVoting.Candidates" %><%--
   Created by IntelliJ IDEA.
   User: yuri
   Date: 20/08/22
@@ -23,8 +24,9 @@
 
         <%
             List<String> candidates=new ArrayList<>();
-            candidates.add("Giulio Andreotti");
-            candidates.add("Bettino Craxi");
+//            candidates.add("Giulio Andreotti");
+//            candidates.add("Bettino Craxi");
+            candidates= Candidates.getCandidates(request.getSession().getId());
             for (String candidate :candidates) {
         %>
         <input type="button" value="<%=candidate%>" onclick="document.getElementById('vote').setAttribute('value',this.value)">

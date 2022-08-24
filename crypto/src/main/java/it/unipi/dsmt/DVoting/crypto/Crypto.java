@@ -1,5 +1,7 @@
 package it.unipi.dsmt.DVoting.crypto;
 
+import org.bouncycastle.asn1.ASN1InputStream;
+import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -128,16 +130,36 @@ public  class Crypto {
         }
     }
 
+
+
+    // this is useless for now but it may be needed
+    private static ASN1Primitive toAsn1Primitive(byte[] data) throws Exception
+    {
+        try (ByteArrayInputStream inStream = new ByteArrayInputStream(data);
+             ASN1InputStream asnInputStream = new ASN1InputStream(inStream);)
+        {
+            return asnInputStream.readObject();
+        }
+    }
     public static boolean verify(PublicKey publicKey, byte[] sign, byte[] msg)  {
         Signature signature = null;
         try {
             signature = Signature.getInstance(SIGNATURE);
             signature.initVerify(publicKey);
             signature.update(msg);
-            return signature.verify(sign);
         } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException e) {
             e.printStackTrace();
             return false;
+        }
+        try {
+            return signature.verify(sign);
+        } catch(SignatureException e){
+            try {
+                System.out.println("sign: "+ new String(sign));
+                return signature.verify(toAsn1Primitive(sign).getEncoded());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
 
