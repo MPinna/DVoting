@@ -209,6 +209,27 @@ public  class Crypto {
 
     }
 
+    public static PrivateKey getPrivateKey(InputStream fileIn) throws FileNotFoundException {
+        PEMParser pemParser = new PEMParser(new InputStreamReader(fileIn));
+        Object object = null;
+        KeyPair kp = null;
+        try {
+            object = pemParser.readObject();
+            JcaPEMKeyConverter converter = new JcaPEMKeyConverter();
+
+            if (object instanceof PEMKeyPair) {
+                kp = converter.getKeyPair((PEMKeyPair)object);
+
+            }
+            assert kp != null;
+            return kp.getPrivate();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     public static PublicKey getPublicKey(String filePath) throws FileNotFoundException {
         Security.addProvider(new BouncyCastleProvider());
         File publicKeyFile = new File(filePath); // public key file in PEM format

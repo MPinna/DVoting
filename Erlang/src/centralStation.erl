@@ -28,25 +28,28 @@ start()->
   {ok, PemBin} = file:read_file("../../resources/cs_keys/cs_key.pem"),
   [DSAPEntry] =  public_key:pem_decode(PemBin),
   PrvKey = public_key:pem_entry_decode(DSAPEntry),
-  cs_loop(PubKey,PrvKey).
+  cs_loop(PubKey,PrvKey, 0).
 
-cs_loop(PubKey,PrvKey) ->
+cs_loop(PubKey,PrvKey, N) ->
   receive
-    {_, Sign,Payload} ->
+    {PS, Sign,Payload} ->
       io:format("\n received \n"),
-      Ok= public_key:verify(Payload,sha256, Sign,PubKey),
-      io:format(base64:encode_to_string(Sign)),
+      Ok= public_key:verify(term_to_binary(Payload),sha256, Sign,PubKey),
+      {Vote, SeqN}=Payload,
+      %io:format(base64:encode_to_string(Sign)),
       %Ok= crypto:verify(dss,sha256, Payload,Sign,Key),
-      if Ok==true ->io:format("\n Valid sign \n\n"),
-        {cs, central@localhost}! {self(), Payload};
+      if Ok==true and (SeqN>N) ->
+        io:format("\n Valid sign \n\n"),
+        {cs, central@localhost}! {self(), Vote},
+        cs_loop(PubKey,PrvKey,SeqN);
         true-> io:format("\n Not valid sign \n\n")
-        end,
-      cs_loop(PubKey,PrvKey);
+      end,
+    cs_loop(PubKey,PrvKey,N);
     {Sender,request_candidates} ->
       send_candidates(Sender, PrvKey),
-      cs_loop(PubKey,PrvKey);
+      cs_loop(PubKey,PrvKey,N);
     _ -> io:format("~n watherver cs ~n"),
-      cs_loop(PubKey,PrvKey)
+      cs_loop(PubKey,PrvKey, N)
   end,
  io:format("\n end \n\n").
 

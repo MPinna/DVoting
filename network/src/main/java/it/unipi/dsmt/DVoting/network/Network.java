@@ -20,12 +20,13 @@ public class Network {
 
     /**
      * Network class constructor
+     *
      * @param name the Mbox name (must be unique for each Mbox)
      * @throws IOException if network can't be created
      */
     public Network(String name) throws IOException {
 
-        if(otpNode==null) {
+        if (otpNode == null) {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
             System.out.println(otpMbox.getName());
@@ -35,7 +36,8 @@ public class Network {
 
     /**
      * Network class constructor
-     * @param name the Mbox name (must be unique for each Mbox)
+     *
+     * @param name   the Mbox name (must be unique for each Mbox)
      * @param nodeId id od the current node
      * @param cookie the cookie for the Mbox
      * @throws IOException if network can't be created
@@ -43,7 +45,7 @@ public class Network {
     public Network(String name, String nodeId, String cookie) throws IOException {
         this.nodeId = nodeId;
         this.cookie = cookie;
-        if(otpNode==null) {
+        if (otpNode == null) {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
         }
@@ -81,7 +83,7 @@ public class Network {
         OtpErlangBinary msg = new OtpErlangBinary(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
-        otpMbox.send("polling_station_endpoint", pollingStationNode,  msgTuple);
+        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
     }
 
     public void sendSigned(byte[] message, byte[] sign) {
@@ -89,8 +91,21 @@ public class Network {
         OtpErlangBinary s = new OtpErlangBinary(sign);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg, s});
-        otpMbox.send("polling_station_endpoint", pollingStationNode,  msgTuple);
+        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
     }
+
+    public void sendSigned(byte[] message, String signerID,byte[] sign) {
+        OtpErlangBinary msg = new OtpErlangBinary(message);
+        OtpErlangBinary s = new OtpErlangBinary(sign);
+        OtpErlangString id= new OtpErlangString(signerID);
+        OtpErlangTuple payload = new OtpErlangTuple(
+                new OtpErlangObject[]{msg,id, s});
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(),payload});
+        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
+
+    }
+
     public String receiveString() {
         String res = null;
         while (true) {
@@ -119,7 +134,7 @@ public class Network {
                 if (!(message instanceof OtpErlangTuple erlangTuple))
                     continue;
                 OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
-               return payload.binaryValue();
+                return payload.binaryValue();
 
             } catch (OtpErlangDecodeException | OtpErlangExit | ClassCastException ignored) {
             }
@@ -129,10 +144,11 @@ public class Network {
 
     /**
      * receive a signed message in binary format
+     *
      * @return 2 arrays of bytes in a list, the 1st is the message, the 2nd is the sign
      */
     public List<byte[]> receiveSigned() {
-        List<byte[]> res=new ArrayList<>(2);
+        List<byte[]> res = new ArrayList<>(2);
         while (true) {
             try {
                 OtpErlangObject message = otpMbox.receive();
@@ -151,5 +167,19 @@ public class Network {
 
     }
 
+    public boolean receiveAck() {
+        try {
+            OtpErlangObject message = otpMbox.receive();
+            System.out.println("received something");
+            if (!(message instanceof OtpErlangTuple erlangTuple))
+                return false;
+            OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
+            OtpErlangAtom payload = (OtpErlangAtom) erlangTuple.elementAt(1);
+            if (payload.toString().equals("ok"))
+                return true;
+        } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
+            return false;
+        }
+        return false;
+    }
 }
-

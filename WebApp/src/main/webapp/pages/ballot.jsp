@@ -1,12 +1,13 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="it.unipi.dsmt.DVoting.Candidates" %><%--
+<%@ page import="it.unipi.dsmt.DVoting.Candidates" %>
+<%@ page import="it.unipi.dsmt.DVoting.AccessServlet" %><%--
   Created by IntelliJ IDEA.
   User: yuri
   Date: 20/08/22
   Time: 10:14
   To change this template use File | Settings | File Templates.
-  TODO prevent access from unregistered users
+
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
@@ -19,11 +20,18 @@
     width: 900px;
     background-color: bisque;
     border: double black;"
-    action="<%=request.getContextPath()%>/PollingStationServlet" method="post" onsubmit="return confirm('close ballot?')">
+    action="<%=request.getContextPath()%>/Booth" method="post" onsubmit="return confirm('close ballot?')">
     <fieldset>
         <legend> choose a candidate</legend>
 
-        <%
+        <%      // prevent access from unregistered users
+            if(!AccessServlet.authenticateUser(request.getSession())) {
+                request.getSession().invalidate();
+                response.sendRedirect(request.getContextPath());
+//            RequestDispatcher requestDispatcher = request.getRequestDispatcher(targetJSP);
+//            requestDispatcher.forward(request, response);
+            }
+            else{
             List<String> candidates=new ArrayList<>();
 //            candidates.add("Giulio Andreotti");
 //            candidates.add("Bettino Craxi");
@@ -32,7 +40,7 @@
         %>
         <input type="button" value="<%=candidate%>" onclick="document.getElementById('vote').setAttribute('value',this.value)">
 
-        <%  }   %>
+        <%  }  } %>
 
     </fieldset>
     <input type="text" value="" id="vote" name="vote">

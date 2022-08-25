@@ -9,13 +9,11 @@ import javax.servlet.annotation.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Writer;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-// TODO change NAME because this run on voting machines! Polling station only run erlang!
-@WebServlet(name = "PollingStationServlet", value = "/PollingStationServlet")
-public class PollingStationServlet extends HttpServlet {
+@WebServlet(name = "BoothServlet", value = "/Booth")
+public class BoothServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String targetJSP = "/pages/index.jsp";
@@ -27,11 +25,12 @@ public class PollingStationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         System.out.println("DoPost PollingStation");
-        PrintWriter writer = response.getWriter();
-        String message = "<html><body><h1> JAVA </h1></body></html>";
-        writer.write(message);
-        Network n;
+
         try {
+            PrintWriter writer = response.getWriter();
+            String message = "<html><body><h1> JAVA </h1></body></html>";
+            writer.write(message);
+            Network n;
             n=new Network(request.getSession().getId());
             String vote = request.getParameter("vote");
             writer.println(vote);
@@ -43,16 +42,19 @@ public class PollingStationServlet extends HttpServlet {
             String filePath=this.getClass().getResource("/cs_keys/cs_cert.pem").getPath();
             pk= Crypto.getPublicKeyFromCertificate(filePath);
             writer.write("<h1> ok key </h1>");
-            // TODO add voter ID and voter key signature for authentication
             byte[] cph=Crypto.encrypt(pk, vote.getBytes());
-            n.sendBytes(cph);
-            // TODO prevent multiple votes
-            // TODO add acknowledge response from polling station
-            writer.println("vote set");
+            // add voter ID and voter key signature for authentication
+            PrivateKey pv = (PrivateKey) request.getSession().getAttribute("VoterKey");
+            String voterID = (String) request.getSession().getAttribute("VoterID");
+            byte[] sign=Crypto.sign(pv,cph);
+            n.sendSigned(cph,voterID,sign);
+            writer.println("vote sent");
             writer.close();
-        } catch (FileNotFoundException  | NullPointerException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-
         }
+        request.getSession(false).invalidate();
+        //response.sendRedirect(request.getContextPath());
+
     }
 }
