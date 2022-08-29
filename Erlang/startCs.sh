@@ -1,0 +1,1 @@
+erl -name cs@$(hostname -I) -setcookie "abcde"
