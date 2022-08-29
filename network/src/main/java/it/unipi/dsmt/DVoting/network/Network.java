@@ -112,8 +112,7 @@ public class Network {
             try {
                 OtpErlangObject message = otpMbox.receive();
                 System.out.println("received something");
-                if (!(message instanceof OtpErlangTuple erlangTuple))
-                    continue;
+                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
                 //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangString payload = (OtpErlangString) erlangTuple.elementAt(1);
@@ -131,8 +130,7 @@ public class Network {
             try {
                 OtpErlangObject message = otpMbox.receive();
                 System.out.println("received something");
-                if (!(message instanceof OtpErlangTuple erlangTuple))
-                    continue;
+                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
                 return payload.binaryValue();
 
@@ -153,8 +151,7 @@ public class Network {
             try {
                 OtpErlangObject message = otpMbox.receive();
                 System.out.println("received something");
-                if (!(message instanceof OtpErlangTuple erlangTuple))
-                    continue;
+                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangBinary msg = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangBinary s = (OtpErlangBinary) erlangTuple.elementAt(2);
                 res.add(msg.binaryValue());
@@ -171,8 +168,7 @@ public class Network {
         try {
             OtpErlangObject message = otpMbox.receive();
             System.out.println("received something");
-            if (!(message instanceof OtpErlangTuple erlangTuple))
-                return false;
+            OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
             OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
             OtpErlangAtom payload = (OtpErlangAtom) erlangTuple.elementAt(1);
             if (payload.toString().equals("ok"))

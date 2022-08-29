@@ -1,0 +1,38 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="WebApp:war exploded">
+    <output-path>$PROJECT_DIR$/WebApp/target/WebApp-1.0-SNAPSHOT</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <exploded>true</exploded>
+        <module>WebApp</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="WebApp" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="archive" name="crypto-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="crypto" />
+          </element>
+          <element id="library" level="project" name="Maven: org.bouncycastle:bcprov-jdk18on:1.71" />
+          <element id="library" level="project" name="Maven: org.bouncycastle:bcpkix-jdk18on:1.71" />
+          <element id="library" level="project" name="Maven: org.bouncycastle:bcutil-jdk18on:1.71" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.3" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.3" />
+          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.3" />
+          <element id="archive" name="network-1.0-SNAPSHOT.jar">
+            <element id="module-output" name="network" />
+          </element>
+          <element id="library" level="project" name="Maven: clojang:erlang-jinterface:1.10-1" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/WebApp/target/WebApp-1.0-SNAPSHOT/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="javaee-facet-resources" facet="WebApp/web/Web" />
+    </root>
+  </artifact>
+</component>

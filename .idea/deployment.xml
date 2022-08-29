@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="student75" remoteFilesAllowedToDisappearOnAutoupload="false" confirmBeforeUploading="false">
+    <option name="confirmBeforeUploading" value="false" />
+    <serverData>
+      <paths name="student75">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/DVoting" local="$PROJECT_DIR$" web="" />
+            <mapping deploy="/root/DVoting" local="$PROJECT_DIR$/CentralStation/target" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="student76">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/DVoting/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="student77">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/DVoting/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="student78">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/root/DVoting/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

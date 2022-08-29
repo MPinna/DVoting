@@ -3,16 +3,16 @@ package it.unipi.dsmt.DVoting.CentralStation;
 import it.unipi.dsmt.DVoting.crypto.Crypto;
 import it.unipi.dsmt.DVoting.network.Network;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.InputStream;
 import java.security.PrivateKey;
-import java.security.PublicKey;
+
 
 public class CentralStationDaemon {
 
     public static void main(String[] args) {
-        String nodeId = null;
+
+        try {
+            String nodeId = null;
         String cookie = null;
         String mBox = null;
         if (args.length == 3){
@@ -25,11 +25,9 @@ public class CentralStationDaemon {
             mBox = "cs";
         }
         Network n= null;
-        try {
+
             n = new Network(mBox, nodeId, cookie);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
         System.out.println("The server " + nodeId + " is running.");
         System.out.println("cookie: " + cookie);
         System.out.println("TmBox: " + mBox);
@@ -39,18 +37,22 @@ public class CentralStationDaemon {
             System.out.println("server@localhost is down");
         }
         PrivateKey pk;
-        try {
-            String filePath=CentralStationDaemon.class.
-                    getResource("/cs_keys/cs_key.pem").getPath();
-            System.out.println(filePath);
-            //File privateKeyFile = new File(filePath); // private key file in PEM format
-            pk=Crypto.getPrivateKey(filePath);
-            if(pk==null)
-                System.out.println("pk null");
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        InputStream filePath=CentralStationDaemon.class.getResourceAsStream("/cs_keys/cs_key.pem");
+        System.out.println(filePath);
+        //File privateKeyFile = new File(filePath); // private key file in PEM format
+        pk=Crypto.getPrivateKey(filePath);
+        if(pk==null){
+            System.out.println("pk null");
             return;
         }
+
+        String DATABASE_NAME = "encVotes.db";
+        Database db = new Database(DATABASE_NAME);
+        if(!db.connect() || !db.createVotesTable()){
+            System.out.println("Could not open connection to " + DATABASE_NAME);
+            return;
+        }
+
         while(true) {
 
             byte[] payload=n.receiveBytes();
@@ -60,5 +62,9 @@ public class CentralStationDaemon {
             System.out.println("message " + message);
             //n.send("ok");
         }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
