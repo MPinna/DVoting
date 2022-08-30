@@ -1,6 +1,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="it.unipi.dsmt.DVoting.Candidates" %>
+<%@ page import="it.unipi.dsmt.DVoting.AdimnServlet" %>
 <%@ page import="it.unipi.dsmt.DVoting.AccessServlet" %><%--
   Created by IntelliJ IDEA.
   User: yuri

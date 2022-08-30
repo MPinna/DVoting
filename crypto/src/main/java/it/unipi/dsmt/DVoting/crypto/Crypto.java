@@ -3,6 +3,7 @@ package it.unipi.dsmt.DVoting.crypto;
 import org.bouncycastle.asn1.ASN1InputStream;
 import org.bouncycastle.asn1.ASN1Primitive;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
+import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.jcajce.provider.asymmetric.x509.CertificateFactory;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jce.spec.IESParameterSpec;
@@ -12,6 +13,7 @@ import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
 import org.bouncycastle.openssl.jcajce.JcePEMDecryptorProviderBuilder;
+import org.bouncycastle.util.encoders.Hex;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -22,7 +24,6 @@ import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.spec.ECGenParameterSpec;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Objects;
 import java.util.Random;
@@ -278,6 +279,13 @@ public  class Crypto {
 
     public static boolean verifyCs(byte[] sign, byte[] msg)  {
         return verify(getCsPublicKeyFromCertificate(),sign,msg);
+    }
+
+    public static String digest(String s){
+        SHA256Digest d= new SHA256Digest();
+        d.update(s.getBytes(), 0, s.getBytes().length);
+        byte[] result = new byte[d.getDigestSize()];
+        return Hex.toHexString(result);
     }
 
 }

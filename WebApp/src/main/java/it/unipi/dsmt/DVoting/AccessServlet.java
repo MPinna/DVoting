@@ -8,7 +8,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.security.PrivateKey;
 
 @WebServlet(name = "AccessServlet", value = "/Access")
@@ -38,6 +37,7 @@ public class AccessServlet  extends HttpServlet {
             e.printStackTrace();
             request.getSession().invalidate();
             response.sendRedirect(request.getContextPath());
+            return;
         }
         response.sendRedirect(request.getContextPath()+"/pages/ballot.jsp");
 

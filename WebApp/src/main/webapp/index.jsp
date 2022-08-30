@@ -15,5 +15,15 @@
     <input type = "submit" value = "Access" />
 </form>
 
+<form action = "Admin" method = "post">
+    <fieldset> <!-- login phase with private key upload -->
+        <legend>Admin Login</legend>
+        <input type = "name" name = "name" placeholder="admin name"/>
+        <br>
+        <input type="password" name="password" placeholder="admin password">
+    </fieldset>
+    <input type = "submit" value = "Admin Access" />
+</form>
+
 </body>
 </html>

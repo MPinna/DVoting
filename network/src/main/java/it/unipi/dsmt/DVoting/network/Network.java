@@ -15,7 +15,7 @@ public class Network {
     static OtpMbox otpMbox;
     String pollingStationMbox = "polling_station_endpoint";
     String centralStationMbox = "central_station_endpoint";
-    String pollingStationNode = "server@localhost";
+    static String pollingStationNode = "server@localhost";
     String centralStationNode = "server@localhost";
 
     /**
@@ -26,6 +26,19 @@ public class Network {
      */
     public Network(String name) throws IOException {
 
+        if (otpNode == null) {
+            otpNode = new OtpNode(nodeId, cookie);
+            otpMbox = otpNode.createMbox(name);
+            System.out.println(otpMbox.getName());
+        }
+        if(pollingStationNode == null){
+            pollingStationNode = "server@localhost";
+        }
+
+    }
+
+    public Network(String name, String pollingStationNode) throws IOException {
+        Network.pollingStationNode = pollingStationNode;
         if (otpNode == null) {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
@@ -49,6 +62,9 @@ public class Network {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
         }
+        if(pollingStationNode == null){
+            pollingStationNode = "server@localhost";
+        }
     }
 
     public boolean test() {
@@ -57,7 +73,7 @@ public class Network {
         return otpNode.ping(pollingStationNode, 2000);
     }
 
-    public void sendString(String message) {
+    public void sendStringToPollingStation(String message) {
         OtpErlangString msg = new OtpErlangString(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
@@ -76,6 +92,13 @@ public class Network {
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
         otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
+    }
+
+    public void sendAtomToPollingStation(String message) {
+        OtpErlangAtom msg = new OtpErlangAtom(message);
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(), msg});
+        otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 
 

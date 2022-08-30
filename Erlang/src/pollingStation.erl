@@ -55,7 +55,24 @@ ps_loop(Key, N) ->
     {Booth, Payload} -> ps_eval(Key,Booth,Payload, N+1),
       io:format(" ps sent ~n"),
       ps_loop(Key,  N+1);
+    {_,suspend_vote}->ps_suspended(Key,N);
+    {Admin,get_status} ->Admin !{self(), "open"}, ps_loop(Key,N);
     _ -> io:format("wathever ps ~n"),
       ps_loop(Key,  N)
   end,
   io:format(" ps end ~n").
+
+ps_suspended(Key,N) ->
+  receive
+    {_,resume_vote } ->ps_loop(Key, N);
+    {_,stop_vote} -> ps_stopped();
+    {Admin,get_status} ->Admin !{self(), "suspended"},
+      ps_suspended(Key,N);
+    _ -> ps_suspended(Key,N)
+  end.
+
+ps_stopped() ->
+  receive
+    {Sender,_} ->Sender !{self(), "stopped"},
+      ps_stopped()
+  end.
