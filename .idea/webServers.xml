@@ -3,7 +3,7 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="271218ab-e7f9-408c-a0b1-b57caccafbec" name="student75" url="http://172.18.0.75">
-        <fileTransfer accessType="SFTP" host="172.18.0.77" port="22" sshConfigId="60410535-7dba-4e74-bbe8-bd7f05395c57" sshConfig="root@172.18.0.77:22">
+        <fileTransfer accessType="SFTP" host="172.18.0.75" port="22" sshConfigId="9934cf6a-ed44-4737-976f-310cb03ab256" sshConfig="root@172.18.0.75:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
@@ -31,5 +31,16 @@
         </fileTransfer>
       </webServer>
     </option>
+    <groups>
+      <group>
+        <name>erlang_nodes</name>
+        <servers>
+          <name value="student75" />
+          <name value="student76" />
+          <name value="student77" />
+          <name value="student78" />
+        </servers>
+      </group>
+    </groups>
   </component>
 </project>
