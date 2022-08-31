@@ -53,6 +53,7 @@ cs_loop(PrvKey, N) ->
     {Sender,request_candidates} ->
       send_candidates(Sender, PrvKey),
       cs_loop(PrvKey,N);
+    {central@localhost, close_vote} ->cs_stopped();
     _ -> io:format("~n watherver cs ~n"),
       cs_loop(PrvKey, N)
   end,
@@ -63,3 +64,9 @@ send_candidates(Sender, Key) ->
   Signature = public_key:sign(Msg, sha256, Key),
   Sender! {self(), Signature, Msg},
   io:format(" candidates list sended~n").
+
+cs_stopped() ->
+  receive
+    {Sender,_} ->Sender !{self(), "stopped"},
+      cs_stopped()
+  end.
