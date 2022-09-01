@@ -1,11 +1,11 @@
 package it.unipi.dsmt.DVoting;
 
+import it.unipi.dsmt.DVoting.crypto.Crypto;
+import it.unipi.dsmt.DVoting.network.Network;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
-import it.unipi.dsmt.DVoting.crypto.Crypto;
-import it.unipi.dsmt.DVoting.network.Network;
 
 public class Candidates {
 
@@ -16,7 +16,7 @@ public class Candidates {
             return candidates;
         Network n;
         try {
-            n=new Network(mBoxName);
+            n=new Network(mBoxName, "ps@173.18.0.76"); // TODO use actual polling station address
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

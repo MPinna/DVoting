@@ -37,6 +37,13 @@
         <version>3.2.2</version>
         <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/commons-dbutils/commons-dbutils -->
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.7</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -48,7 +55,8 @@
                 <finalName>cs_fat</finalName>
                 <archive>
                     <manifest>
-                        <mainClass>it.unipi.dsmt.DVoting.CentralStation.CentralStationDaemon</mainClass>
+<!--                        <mainClass>it.unipi.dsmt.DVoting.CentralStation.CentralStationDaemon</mainClass>-->
+                        <mainClass>it.unipi.dsmt.DVoting.CentralStation.CentralStationDashboard</mainClass>
                     </manifest>
                 </archive>
                 <descriptorRefs>

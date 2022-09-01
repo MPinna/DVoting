@@ -1,7 +1,10 @@
 package it.unipi.dsmt.DVoting.CentralStation;
 
+import org.apache.commons.dbutils.ResultSetIterator;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class DatabaseManager {
@@ -133,6 +136,44 @@ public class DatabaseManager {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * Read all votes and return an iterator
+	 * @return true if the table is dropped successfully, false otherwise.
+	 */
+	public Iterator<Object[]> getVotes(){
+		if(this.connection != null){
+			final String SQL_DROP = "SELECT * FROM votes";
+			try {
+				PreparedStatement preparedStatement = this.connection.prepareStatement(SQL_DROP);
+				ResultSet rs =  preparedStatement.executeQuery();
+				return new ResultSetIterator(rs);
+			}
+			catch (SQLException e){
+				System.err.println(e.getMessage());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * get the number of votes in the database
+	 * @return the number of votes in the database, null in case of error
+	 */
+	public Integer getTurnout(){
+		if(this.connection != null){
+			final String SQL_DROP = "SELECT count(*) FROM votes";
+			try {
+				PreparedStatement preparedStatement = this.connection.prepareStatement(SQL_DROP);
+				ResultSet rs =  preparedStatement.executeQuery();
+				return rs.getInt(0);
+			}
+			catch (SQLException e){
+				System.err.println(e.getMessage());
+			}
+		}
+		return null;
 	}
 	
 	
