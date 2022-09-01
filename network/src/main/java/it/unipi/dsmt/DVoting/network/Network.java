@@ -73,6 +73,12 @@ public class Network {
         return otpNode.ping(pollingStationNode, 2000);
     }
 
+    public boolean pingCS() {
+        //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
+        //otpMbox.whereis(pollingStationNode);
+        return otpNode.ping(centralStationNode, 2000);
+    }
+
     public void sendStringToPollingStation(String message) {
         OtpErlangString msg = new OtpErlangString(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(

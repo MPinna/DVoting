@@ -14,7 +14,7 @@
 %% API
 -export([read_key/1]).
 
-read_key(Path)-> % TODO move to a utility module
+read_key(Path)->
   {ok, PemBin} = file:read_file(Path),
   [DSAEntry] =  public_key:pem_decode(PemBin),
   public_key:pem_entry_decode(DSAEntry).
