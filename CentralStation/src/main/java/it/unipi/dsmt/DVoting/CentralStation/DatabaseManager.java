@@ -1,9 +1,10 @@
 package it.unipi.dsmt.DVoting.CentralStation;
 
-import javax.sql.StatementEvent;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Database {
+public class DatabaseManager {
 	
 	private final String baseUri = "jdbc:sqlite:";
 	private String uri = "";
@@ -13,7 +14,7 @@ public class Database {
 	 * Create a new Database object
 	 * @param databaseName name of the sqlite database to be used
 	 */
-	public Database(final String databaseName){
+	public DatabaseManager(final String databaseName){
 		this.uri = this.baseUri + databaseName;
 	}
 	
@@ -75,8 +76,8 @@ public class Database {
 	 * @param tableName the name of the table whose schema is to be retrieved
 	 * @return the schema of the table
 	 */
-	public String getTableSchema(final String tableName){
-		StringBuilder ret = new StringBuilder();
+	public List<String> getTableSchema(final String tableName){
+		List<String> schema = new ArrayList<String>();
 		try {
 			String SQL_DUMMY_SELECT = "SELECT * FROM " + tableName + " LIMIT 1";
 			PreparedStatement ps = this.connection.prepareStatement(SQL_DUMMY_SELECT);
@@ -84,14 +85,14 @@ public class Database {
 			ResultSet rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-				String schema = rsmd.getColumnName(i);
-				ret.append(schema + " ");
+				String columnName = rsmd.getColumnName(i);
+				schema.add(columnName);
 			}
 		}
 		catch(SQLException e){
 			System.err.println(e.getMessage());
 		}
-		return ret.toString();
+		return schema;
 	}
 	
 	/**
@@ -115,10 +116,30 @@ public class Database {
 		return false;
 	}
 	
+	/**
+	 * Drop the table 'votes' if it exists.
+	 * @return true if the table is dropped successfully, false otherwise.
+	 */
+	public boolean dropTableVotes(){
+		if(this.connection != null){
+			final String SQL_DROP = "DROP TABLE IF EXISTS votes";
+			try {
+				PreparedStatement preparedStatement = this.connection.prepareStatement(SQL_DROP);
+				preparedStatement.executeUpdate();
+				return true;
+			}
+			catch (SQLException e){
+				System.err.println(e.getMessage());
+			}
+		}
+		return false;
+	}
+	
+	
 	public static void main(String[] args) {
 		String DATABASE_NAME = "encVotes.db";
 		
-		Database db = new Database(DATABASE_NAME);
+		DatabaseManager db = new DatabaseManager(DATABASE_NAME);
 		if(db.connect()){
 			System.out.println("Connection to the database established successfully.");
 			if(db.createVotesTable()){
@@ -129,9 +150,9 @@ public class Database {
 			db.addVote("Sempronio");
 			
 			
-			String mySchema = new String(db.getTableSchema("votes"));
+			List<String> schema = db.getTableSchema("votes");
 			System.out.println("Schema:");
-			System.out.println(mySchema);
+			System.out.println(schema);
 			
 			db.disconnect();
 			System.out.println("Disconnected from the database.");

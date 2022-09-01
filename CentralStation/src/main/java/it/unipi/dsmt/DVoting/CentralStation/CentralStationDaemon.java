@@ -47,7 +47,7 @@ public class CentralStationDaemon {
         }
 
         String DATABASE_NAME = "encVotes.db";
-        Database db = new Database(DATABASE_NAME);
+        DatabaseManager db = new DatabaseManager(DATABASE_NAME);
         if(!db.connect() || !db.createVotesTable()){
             System.out.println("Could not open connection to " + DATABASE_NAME);
             return;
