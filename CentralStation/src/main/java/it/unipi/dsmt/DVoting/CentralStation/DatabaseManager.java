@@ -1,10 +1,7 @@
 package it.unipi.dsmt.DVoting.CentralStation;
 
-import org.apache.commons.dbutils.ResultSetIterator;
-
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class DatabaseManager {
@@ -140,15 +137,16 @@ public class DatabaseManager {
 
 	/**
 	 * Read all votes and return an iterator
+	 *
 	 * @return true if the table is dropped successfully, false otherwise.
 	 */
-	public Iterator<Object[]> getVotes(){
+	public VotesIterator getVotes(){
 		if(this.connection != null){
 			final String SQL_DROP = "SELECT * FROM votes";
 			try {
 				PreparedStatement preparedStatement = this.connection.prepareStatement(SQL_DROP);
 				ResultSet rs =  preparedStatement.executeQuery();
-				return new ResultSetIterator(rs);
+				return new VotesIterator(rs);
 			}
 			catch (SQLException e){
 				System.err.println(e.getMessage());
@@ -167,7 +165,7 @@ public class DatabaseManager {
 			try {
 				PreparedStatement preparedStatement = this.connection.prepareStatement(SQL_DROP);
 				ResultSet rs =  preparedStatement.executeQuery();
-				return rs.getInt(0);
+				return rs.getInt(1);
 			}
 			catch (SQLException e){
 				System.err.println(e.getMessage());
@@ -189,7 +187,13 @@ public class DatabaseManager {
 			db.addVote("Tizio");
 			db.addVote("Caio");
 			db.addVote("Sempronio");
-			
+
+			System.out.println("number of votes:"+db.getTurnout());
+			VotesIterator rs = db.getVotes();
+			while(rs.hasNext()){
+						String s =  rs.next();
+						System.out.println(s);
+					}
 			
 			List<String> schema = db.getTableSchema("votes");
 			System.out.println("Schema:");
