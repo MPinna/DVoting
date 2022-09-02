@@ -24,7 +24,7 @@ start()->
   %      'OTPSubjectPublicKeyInfo'.subjectPublicKey,
   try
     Pid=spawn(?MODULE, init,[]),
-    io:format("cs loop started ~n"),
+    io:format("cs loop started on pid ~p ~n", [Pid]),
     {ok,Pid}
   catch
       Error  -> {error,Error}
@@ -32,6 +32,7 @@ start()->
 
 init()->
   PrvKey =util:read_key("../../resources/cs_keys/cs_key.pem"),
+  %global:register_name(central_station_endpoint, self()),
   register(central_station_endpoint, self()),
   cs_loop(PrvKey ,0).
 
@@ -51,7 +52,7 @@ cs_loop(PrvKey, N) ->
       end,
     cs_loop(PrvKey,N);
     {Sender,request_candidates} ->
-      send_candidates(Sender, PrvKey),
+      ok=send_candidates(Sender, PrvKey),
       cs_loop(PrvKey,N);
     {central@localhost, close_vote} ->cs_stopped();
     _ -> io:format("~n watherver cs ~n"),
@@ -63,7 +64,8 @@ send_candidates(Sender, Key) ->
   Msg=list_to_binary("Tizio 1_Tizio 2"),
   Signature = public_key:sign(Msg, sha256, Key),
   Sender! {self(), Signature, Msg},
-  io:format(" candidates list sended~n").
+  io:format(" candidates list sended ~p ~n", [Sender]),
+  ok.
 
 cs_stopped() ->
   receive

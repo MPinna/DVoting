@@ -56,6 +56,7 @@ public class AdminServlet extends HttpServlet {
         Network net= null;
         try {
             net = new Network(session.getId());
+            System.out.println(net.pingCS());
             net.sendAtomToPollingStation("get_status");
             return net.receiveString();
         } catch (IOException e) {

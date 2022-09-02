@@ -16,7 +16,7 @@ public class Candidates {
             return candidates;
         Network n;
         try {
-            n=new Network(mBoxName, "ps@173.18.0.76"); // TODO use actual polling station address
+            n=new Network(mBoxName, "ps@studente76"); // TODO use actual polling station address
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

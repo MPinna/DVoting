@@ -19,16 +19,17 @@
 start(Node)->
   try %% TODO maybe use a local monitor instead
     Pid=spawn_link(Node, ?MODULE,init,[]),
-    io:format(" ps loop started ~n"),
+     io:format("ps loop started on pid ~p ~n", [Pid]),
     {ok,Pid}
   catch
       Error  -> {error,Error}
   end.
 
 init()->
-  Key=util:read_key("root/DVoting/resources/ps_keys/ps1_key.pem"),
+  Key=util:read_key("../../resources/ps_keys/ps1_key.pem"),
   ok,SequenceNumber = crypto:strong_rand_bytes(4),
-  global:register_name(polling_station_endpoint, self()),
+  %global:register_name(polling_station_endpoint, self()),
+  register(polling_station_endpoint, self()),
   ps_loop(Key ,binary:decode_unsigned(SequenceNumber)).
 
 ps_eval(Key, Booth,Payload, N)->
@@ -44,7 +45,7 @@ ps_eval(Key, Booth,Payload, N)->
     Term=term_to_binary({Vote, N}), % append sequence number
     Signature = public_key:sign(Term, sha256, Key),
     %Signature = crypto:sign(dss, sha256,Term, Key),
-    {cs@server0} ! {self(), Signature, {Vote, N}}
+    {central_station_endpoint,cs@studente75} ! {self(), Signature, {Vote, N}}
   end.
 
 
@@ -53,7 +54,7 @@ ps_loop(Key, N) ->
   receive % TODO fulfill turnout request
     {_, ok} ->ps_loop(Key,  N);
     {_,suspend_vote}->ps_suspended(Key,N);
-    {Admin,get_status} ->Admin !{self(), "open"}, ps_loop(Key,N);
+    {Admin,get_status} ->Admin !{self(), "open"}, io:format("status sent ~p ~n",[Admin]), ps_loop(Key,N);
     {Booth, Payload} -> ps_eval(Key,Booth,Payload, N+1),
       io:format(" ps sent ~n"),
       ps_loop(Key,  N+1);

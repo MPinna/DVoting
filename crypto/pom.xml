@@ -13,14 +13,17 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.71</version>
+            <version>1.71.1</version>
             <scope>compile</scope>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcpkix-jdk18on -->
+        <!-- IMPORTANT: put https://www.bouncycastle.org/download/bcprov-ext-jdk18on-171.jar
+            into /jdk1.8.0_191/jre/lib/ext -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk18on</artifactId>
-            <version>1.71</version>
+            <version>1.71.1</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>

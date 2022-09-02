@@ -4,6 +4,7 @@ import com.ericsson.otp.erlang.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -15,8 +16,8 @@ public class Network {
     static OtpMbox otpMbox;
     String pollingStationMbox = "polling_station_endpoint";
     String centralStationMbox = "central_station_endpoint";
-    static String pollingStationNode = "server@localhost";
-    String centralStationNode = "server@localhost";
+    static String pollingStationNode = "ps@studente76";
+    String centralStationNode = "cs@studente75";
 
     /**
      * Network class constructor
@@ -29,11 +30,17 @@ public class Network {
         if (otpNode == null) {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
+
             System.out.println(otpMbox.getName());
+
         }
-        if(pollingStationNode == null){
-            pollingStationNode = "server@localhost";
-        }
+        System.out.println(otpMbox.ping(pollingStationNode,2000));
+
+        System.out.println(Arrays.toString(otpMbox.getNames()));
+        System.out.println(Arrays.toString(otpNode.getNames()));
+//        if(pollingStationNode == null){
+//            pollingStationNode = "server@localhost";
+//        }
 
     }
 
@@ -104,6 +111,8 @@ public class Network {
         OtpErlangAtom msg = new OtpErlangAtom(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
+        //OtpErlangPid psPid = otpNode.whereis(pollingStationMbox);
+        //otpMbox.send(psPid, msgTuple);
         otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 

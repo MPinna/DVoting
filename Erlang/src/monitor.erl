@@ -35,7 +35,8 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
     start => {centralStation, start, []},
     restart => permanent},
   %List=[ps@host1, ps@host2, ps@host3],
-  List=['ps@172.18.0.76'],
+  List=['ps@studente76'],
+  %List=['ps@172.18.0.76'],
   %% permanent means that this process is always restarted
   PollingStations = polling_stations(List),
   Children = PollingStations++[CentralStation],

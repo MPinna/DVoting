@@ -26,7 +26,7 @@ public class CentralStationDashboard {
             if(res.containsKey(stringVote))
                 res.put(stringVote,(res.get(stringVote)+1));
             else
-                res.put(stringVote,0);
+                res.put(stringVote,1);
         }
         return res;
 
@@ -53,7 +53,7 @@ public class CentralStationDashboard {
             System.out.println("The server " + nodeId + " is running.");
             System.out.println("cookie: " + cookie);
             System.out.println("TmBox: " + mBox);
-            if (n.test()) {
+            if (n.pingCS()) {
                 System.out.println("server@localhost is up.");
             } else {
                 System.out.println("server@localhost is down");
@@ -84,7 +84,7 @@ public class CentralStationDashboard {
             }
             else
                 return;
-            do { 
+            do {
                 System.out.println("daemon running:");
                 int t=db.getTurnout();
                 System.out.println("turnout: "+t);
