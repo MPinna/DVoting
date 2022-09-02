@@ -1,1 +1,1 @@
-erl -name cs@$(hostname -I) -setcookie "abcde"
+erl -sname cs@studente75 -setcookie "abcde"
