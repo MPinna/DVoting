@@ -7,15 +7,24 @@ openssl ec -in cs_keys/cs_key.pem -pubout -out cs_keys/cs_public.pem
 openssl req -new -x509 -key cs_keys/cs_key.pem \
 -passin pass:password --out cs_keys/cs_cert.pem -days 360 \
 -subj "/C=IT/ST=.../L=.../O=.../OU=.../CN=gov/emailAddress=..."
-
+mkdir ../crypto/src/main/java/resources
+cp cs_keys/cs_cert.pem ../crypto/src/main/resources
 mkdir ps_keys
-openssl ecparam -name prime256v1 -genkey -noout -out ps_keys/ps1_key.pem
-openssl ec -in ps_keys/ps1_key.pem -pubout -out ps_keys/ps1_public.pem
 
-openssl req -new -key ps_keys/ps1_key.pem \
--out ps_keys/ps1_req.pem \
--subj "/C=IT/ST=.../L=.../O=.../OU=.../CN=ps1/emailAddress=..."
-openssl x509 -req -in ps_keys/ps1_req.pem \
--CA cs_keys/cs_cert.pem  -CAkey cs_keys/cs_key.pem \
--CAcreateserial -out ps_keys/ps1_cert.pem -days 360 -sha256
+for ID in 1 2 3
+do
+  openssl ecparam -name prime256v1 -genkey -noout -out ps_keys/ps${ID}_key.pem
+  openssl ec -in ps_keys/ps${ID}_key.pem -pubout -out ps_keys/ps${ID}_public.pem
+  mkdir ps${ID}_resources
+  cp ps_keys/ps${ID}_key.pem ps${ID}_resources/ps_key.pem
+  cp ps_keys/ps${ID}_key.pem cs_keys
+  cp cs_keys/cs_public.pem ps${ID}_resources
+done
 
+mkdir v_keys
+for ID in 2 3 4
+do
+  openssl ecparam -name prime256v1 -genkey -noout -out v_keys/v${ID}_key.pem
+  openssl ec -in v_keys/v${ID}_key.pem -pubout -out v_keys/v${ID}_public.pem
+  cp v_keys/v${ID}_public.pem ps1_resources
+done

@@ -25,7 +25,6 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.spec.ECGenParameterSpec;
 import java.util.Base64;
-import java.util.Objects;
 import java.util.Random;
 
 public  class Crypto {
@@ -269,12 +268,23 @@ public  class Crypto {
     }
 
     public static PublicKey getCsPublicKeyFromCertificate(){
-        String filePath= Objects.requireNonNull(Crypto.class.getResource("/cs_keys/cs_cert.pem")).getPath();
+//        String filePath= Objects.requireNonNull(Crypto.class.getResource("cs_cert.pem")).getPath();
+//        System.out.println(filePath);
+//        try {
+//            return getPublicKeyFromCertificate(filePath);
+//        } catch (FileNotFoundException e) {
+//            return null;
+//        }
         try {
-            return getPublicKeyFromCertificate(filePath);
-        } catch (FileNotFoundException e) {
+            InputStream is= Crypto.class.getClassLoader().getResourceAsStream("cs_cert.pem");
+            CertificateFactory f = new CertificateFactory();
+            Certificate certificate = f.engineGenerateCertificate(is);
+            return  certificate.getPublicKey();
+        } catch (CertificateException e) {
+            e.printStackTrace();
             return null;
         }
+
     }
 
     public static boolean verifyCs(byte[] sign, byte[] msg)  {

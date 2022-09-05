@@ -15,6 +15,8 @@
         <serverdata>
           <mappings>
             <mapping deploy="/root/DVoting/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/root/DVoting/resources" local="$PROJECT_DIR$/resources/ps1_resources" />
+            <mapping deploy="" local="" />
           </mappings>
         </serverdata>
       </paths>
@@ -22,6 +24,7 @@
         <serverdata>
           <mappings>
             <mapping deploy="/root/DVoting/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/root/DVoting/resources" local="$PROJECT_DIR$/resources/ps2_resources" />
           </mappings>
         </serverdata>
       </paths>
@@ -29,6 +32,7 @@
         <serverdata>
           <mappings>
             <mapping deploy="/root/DVoting/" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/root/DVoting/resources" local="$PROJECT_DIR$/resources/ps3_resources" />
           </mappings>
         </serverdata>
       </paths>
