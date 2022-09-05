@@ -27,7 +27,7 @@ public class AccessServlet  extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getSession().invalidate();
         try {
-            Part filePart = request.getPart("key");
+            Part filePart = request.getPart("key");/**/
             InputStream fileContent = filePart.getInputStream();
             PrivateKey pk=Crypto.getPrivateKey(fileContent);
             request.getSession().setAttribute("VoterKey", pk);

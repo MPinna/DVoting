@@ -34,7 +34,7 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
   CentralStation = #{id => centralStation,
     start => {centralStation, start, []},
     restart => permanent},
-  %List=[ps@host1, ps@host2, ps@host3],
+  %List=[ps@studente76, ps@studente77, ps@studente78],
   List=['ps@studente76'],
   %List=['ps@172.18.0.76'],
   %% permanent means that this process is always restarted
@@ -44,16 +44,18 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
   %% to the 'supervisor' module.
   {ok, {SupFlags, Children}}.
 
-polling_stations(List)->polling_stations([],List).
+polling_stations(List)->polling_stations([],List, 1).
 
-polling_stations(Ch,[])->
+
+% fill the polling_stations_list, assign nodes and IDs
+polling_stations(Ch,[], _)->
   Ch;
-polling_stations(Ch, [Elem])->polling_stations(Ch, [Elem,[]]);
-polling_stations(Ch,[Head,Tail])->
+polling_stations(Ch, [Elem], N)->polling_stations(Ch, [Elem,[]], N);
+polling_stations(Ch,[Head,Tail], N)->
   PS=#{id => Head,
-    start => {pollingStation, start, [Head]},
+    start => {pollingStation, start, [Head, N]},
     restart => permanent},
-  polling_stations(Ch++[PS], Tail).
+  polling_stations(Ch++[PS], Tail, N+1).
 
 startServices()->
   Pid=spawn(centralStation,start,[]),

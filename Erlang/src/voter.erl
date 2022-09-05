@@ -25,6 +25,7 @@
 %% 4> mnesia:info().
 %%
 init() ->
+  mnesia:start(),
   mnesia:create_table(voter,
                       [{attributes, record_info(fields, voter)}]).
 
@@ -76,26 +77,27 @@ select_all_who_voted() ->
     },
     mnesia:select(voter, [{HasVoted, [], ['$1', '$2']}])
   end,
-  mnesia:transaction(SelectAllWhoVoted).
+  {atomic,Turnout}=mnesia:transaction(SelectAllWhoVoted),
+  length(Turnout).
 
 test_insert() ->
   Vot1 = #voter{ voter_id = 2,
     name = "Mario",
     surname = "Rossi",
     dob = "1970-1-1",
-    pub_key = asd,
+    pub_key = "../../resources/v2_key.pem",
     has_voted = false},
   Vot2 = #voter{ voter_id = 3,
     name = "Luigi",
     surname = "Verdi",
     dob = "1970-1-2",
-    pub_key = qwe,
+    pub_key = "../../resources/v3_key.pem",
     has_voted = false},
   Vot3 = #voter{ voter_id = 4,
     name = "Wario",
     surname = "Gialli",
     dob = "1970-1-3",
-    pub_key = zxc,
+    pub_key = "../../resources/v4_key.pem",
     has_voted = false},
   insert_voter(Vot1),
   insert_voter(Vot2),

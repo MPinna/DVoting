@@ -26,6 +26,8 @@ public class AdminServlet extends HttpServlet {
     public static String ActionSTOP ="stop_vote";
     public static String ActionRESUME="resume_vote";
 
+    public static String ActionEXIT="exit";
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if(!authenticateAdmin(request.getSession())){
@@ -34,13 +36,20 @@ public class AdminServlet extends HttpServlet {
             return;
         }
         try {
+            if(request.getParameter("action").equals(ActionEXIT)){
+                request.getSession().invalidate();
+                response.sendRedirect(request.getContextPath());
+                return;
+            }
+
             Network net= new Network(request.getSession().getId());
             net.sendAtomToPollingStation(request.getParameter("action"));
 
         }catch (Exception e){
             e.printStackTrace();
-            response.sendRedirect(request.getContextPath()+"/pages/dashboard.jsp");
+
         }
+        response.sendRedirect(request.getContextPath()+"/pages/dashboard.jsp");
     }
     public static boolean authenticateAdmin(HttpSession session) {
         try {
@@ -66,10 +75,10 @@ public class AdminServlet extends HttpServlet {
 
     }
 
-    public static String getTurnout(HttpSession session) throws IOException {
+    public static int getTurnout(HttpSession session) throws IOException {
         Network net= new Network(session.getId());
         net.sendAtomToPollingStation("get_turnout");
-        return net.receiveString();
+        return net.receiveInt();
     }
 
     @Override

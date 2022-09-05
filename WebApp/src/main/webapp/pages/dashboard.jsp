@@ -17,17 +17,18 @@
         response.sendRedirect(request.getContextPath());
     }
     String votingStatus=AdminServlet.getVotingStatus(request.getSession());
-
+    int turnout= AdminServlet.getTurnout(request.getSession());
    %>
 
 <form action = "<%=request.getContextPath()%>/Admin" method = "get" >
-    <fieldset> <!-- login phase with private key upload -->
-        <legend>Status: <%= votingStatus%></legend>
+    <fieldset>
+        <legend>Status: <%= votingStatus%> Turnout: <%= turnout%></legend>
         <input type = "hidden" name = "action" id="action"/>
     </fieldset>
-    <input type = "submit" value = "Suspend" onsubmit="this.getElementById('action').value=<%=AdminServlet.ActionSUSPEND%>" />
-    <input type = "submit" value = "Resume" onsubmit="this.getElementById('action').value=<%=AdminServlet.ActionRESUME%>" />
-    <input type = "submit" value = "Stop" onsubmit="this.getElementById('action').value=<%=AdminServlet.ActionSTOP%>" />
+    <input type = "submit" value = "Suspend" onclick="document.getElementById('action').value='<%=AdminServlet.ActionSUSPEND%>'" />
+    <input type = "submit" value = "Resume" onclick="document.getElementById('action').value='<%=AdminServlet.ActionRESUME%>'" />
+    <input type = "submit" value = "Stop" onclick="document.getElementById('action').value='<%=AdminServlet.ActionSTOP%>'" />
+    <input type = "submit" value = "Exit" onclick="document.getElementById('action').value='<%=AdminServlet.ActionEXIT%>'" />
 </form>
 
 </body>

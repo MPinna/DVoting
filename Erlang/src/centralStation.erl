@@ -10,6 +10,7 @@
 -author("yuri").
 -include_lib("public_key/include/public_key.hrl").
 -include("util.hrl").
+-include("seggio.hrl").
 %% API
 -export([start/0, cs_loop/2, init/0]).
 
@@ -32,29 +33,39 @@ start()->
 
 init()->
   PrvKey =util:read_key("../../resources/cs_keys/cs_key.pem"),
+  seggio:init(),
+  seggio:test_insert(),
   %global:register_name(central_station_endpoint, self()),
   register(central_station_endpoint, self()),
   cs_loop(PrvKey ,0).
 
+
 cs_loop(PrvKey, N) ->
   receive
-    {PS, Sign,Payload} ->
-      PubKey = util:read_key("../../resources/ps_keys/ps1_public.pem"),
-      Ok= public_key:verify(term_to_binary(Payload),sha256, Sign,PubKey),
-      {Vote, SeqN}=Payload,
-      %io:format(base64:encode_to_string(Sign)),
-      %Ok= crypto:verify(dss,sha256, Payload,Sign,Key),
-      if Ok==true and (SeqN>N) ->
-        io:format("ps valid sign \n"),
-        {cs, central@localhost}! {self(), Vote},
-        cs_loop(PrvKey,SeqN);
-        true-> io:format("\n Not valid sign \n\n")
-      end,
-    cs_loop(PrvKey,N);
+    {PS, Sign,Payload} -> try
+        io:format("ps id: ~w \n", [PS]),
+        KeyUrl=seggio:get_seggio_pub_key_from_id(PS),
+        io:format("ps key url: ~w \n", [KeyUrl]),
+        PubKey = util:read_key(KeyUrl),
+        Bin=term_to_binary(Payload),
+        true= public_key:verify(Bin,sha256, Sign,PubKey),
+        {Vote, SeqN}=Payload,
+        %io:format(base64:encode_to_string(Sign)),
+        %Ok= crypto:verify(dss,sha256, Payload,Sign,Key),
+        if (SeqN>N) ->
+          io:format("ps valid sign \n"),
+          {cs, central@localhost}! {self(), Vote},
+          cs_loop(PrvKey,SeqN);
+          true-> io:format("\n Not valid sign \n\n"),
+            cs_loop(PrvKey,N)
+        end
+        catch _ -> cs_loop(PrvKey,N) end;
+
     {Sender,request_candidates} ->
       ok=send_candidates(Sender, PrvKey),
       cs_loop(PrvKey,N);
     {central@localhost, close_vote} ->cs_stopped();
+
     _ -> io:format("~n watherver cs ~n"),
       cs_loop(PrvKey, N)
   end,

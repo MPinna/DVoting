@@ -22,8 +22,10 @@
 -include("seggio.hrl").
 
 init() ->
+  mnesia:start(),
   mnesia:create_table(seggio,
     [{attributes, record_info(fields, seggio)}]).
+
 
 % insert a new polling station into the seggio db
 insert_seggio(Seg) ->
@@ -42,7 +44,8 @@ get_seggio_pub_key_from_id(Seggio_id) ->
       },
     mnesia:select(seggio, [{Seggio, [], ['$1']}])
     end,
-  mnesia:transaction(SelectSeggioPubKey).
+  {atomic,[Key]}=mnesia:transaction(SelectSeggioPubKey),
+  Key.
 
 update_seggio_pub_key(Seggio_id, NewKey) ->
   UpdateSeggioPubKey = fun() ->
@@ -59,19 +62,19 @@ test_insert() ->
     name = "Rosso",
     city = "Roma",
     address = "Via Milano, 1",
-    pub_key = "seggioPubKey1",
+    pub_key = "../../resources/ps_keys/ps1_public.pem",
     phone = "333123123123"},
   Seg2 = #seggio{seggio_id = 2,
     name = "Blu",
     city = "Milano",
     address = "Via Torino, 1",
-    pub_key = "seggioPubKey2",
+    pub_key = "../../resources/ps_keys/ps2_public.pem",
     phone = "333123123124"},
   Seg3 = #seggio{seggio_id = 3,
     name = "Giallo",
     city = "Torino",
     address = "Via Roma, 1",
-    pub_key = "seggioPubKey3",
+    pub_key = "../../resources/ps_keys/ps3_public.pem",
     phone = "333123123125"},
   insert_seggio(Seg1),
   insert_seggio(Seg2),

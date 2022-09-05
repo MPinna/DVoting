@@ -37,6 +37,10 @@
 //            candidates.add("Giulio Andreotti");
 //            candidates.add("Bettino Craxi");
             candidates= Candidates.getCandidates(request.getSession().getId());
+            if(candidates == null){
+            %> impossible to retrieve candidates list <%
+                return;
+            }
             for (String candidate :candidates) {
         %>
         <input type="button" value="<%=candidate%>" onclick="document.getElementById('vote').setAttribute('value',this.value)">

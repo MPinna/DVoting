@@ -144,6 +144,19 @@ public class Network {
 
     }
 
+    public void sendVoteSigned(byte[] message, String signerID,byte[] sign) {
+        OtpErlangBinary msg = new OtpErlangBinary(message);
+        OtpErlangBinary s = new OtpErlangBinary(sign);
+        OtpErlangString id= new OtpErlangString(signerID);
+        OtpErlangAtom atom= new OtpErlangAtom("vote");
+        OtpErlangTuple payload = new OtpErlangTuple(
+                new OtpErlangObject[]{msg,id, s});
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(),payload, atom});
+        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
+
+    }
+
     public String receiveString() {
         String res = null;
         while (true) {
@@ -158,6 +171,25 @@ public class Network {
                 break;
 
             } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
+            }
+        }
+        return res;
+    }
+
+    public int receiveInt() {
+        int res;
+        while (true) {
+            try {
+                OtpErlangObject message = otpMbox.receive();
+                System.out.println("received something");
+                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
+                OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
+                //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
+                OtpErlangLong payload = (OtpErlangLong) erlangTuple.elementAt(1);
+                res = payload.intValue();
+                break;
+
+            } catch (OtpErlangDecodeException | OtpErlangExit | OtpErlangRangeException ignored) {
             }
         }
         return res;
