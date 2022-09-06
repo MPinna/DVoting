@@ -2,7 +2,6 @@ package it.unipi.dsmt.DVoting;
 
 
 import it.unipi.dsmt.DVoting.crypto.Crypto;
-import it.unipi.dsmt.DVoting.network.Network;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -42,7 +41,7 @@ public class AdminServlet extends HttpServlet {
                 return;
             }
 
-            Network net= new Network(request.getSession().getId());
+            WebAppNetwork net= new WebAppNetwork(request.getSession().getId());
             net.sendAtomToPollingStation(request.getParameter("action"));
 
         }catch (Exception e){
@@ -62,9 +61,9 @@ public class AdminServlet extends HttpServlet {
     }
 
     public static String getVotingStatus(HttpSession session)  {
-        Network net= null;
+
         try {
-            net = new Network(session.getId());
+            WebAppNetwork net= new WebAppNetwork(session.getId());
             System.out.println(net.pingCS());
             net.sendAtomToPollingStation("get_status");
             return net.receiveString();
@@ -76,7 +75,7 @@ public class AdminServlet extends HttpServlet {
     }
 
     public static int getTurnout(HttpSession session) throws IOException {
-        Network net= new Network(session.getId());
+        WebAppNetwork net= new WebAppNetwork(session.getId());
         net.sendAtomToPollingStation("get_turnout");
         return net.receiveInt();
     }

@@ -10,13 +10,13 @@ import java.util.List;
 
 public class Network {
 
-    String nodeId = "senderNode@localhost";
-    String cookie = "abcde";
-    static OtpNode otpNode;
-    static OtpMbox otpMbox;
-    String pollingStationMbox = "polling_station_endpoint";
-    String centralStationMbox = "central_station_endpoint";
-    static String pollingStationNode = "ps@studente76";
+    protected String nodeId = "senderNode@localhost";
+    protected String cookie = "abcde";
+    protected static OtpNode otpNode;
+    protected static OtpMbox otpMbox;
+
+    protected String centralStationMbox = "central_station_endpoint";
+
     String centralStationNode = "cs@studente75";
 
     /**
@@ -30,11 +30,9 @@ public class Network {
         if (otpNode == null) {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
-
             System.out.println(otpMbox.getName());
 
         }
-        System.out.println(otpMbox.ping(pollingStationNode,2000));
 
         System.out.println(Arrays.toString(otpMbox.getNames()));
         System.out.println(Arrays.toString(otpNode.getNames()));
@@ -44,15 +42,7 @@ public class Network {
 
     }
 
-    public Network(String name, String pollingStationNode) throws IOException {
-        Network.pollingStationNode = pollingStationNode;
-        if (otpNode == null) {
-            otpNode = new OtpNode(nodeId, cookie);
-            otpMbox = otpNode.createMbox(name);
-            System.out.println(otpMbox.getName());
-        }
 
-    }
 
     /**
      * Network class constructor
@@ -69,16 +59,9 @@ public class Network {
             otpNode = new OtpNode(nodeId, cookie);
             otpMbox = otpNode.createMbox(name);
         }
-        if(pollingStationNode == null){
-            pollingStationNode = "server@localhost";
-        }
     }
 
-    public boolean test() {
-        //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
-        //otpMbox.whereis(pollingStationNode);
-        return otpNode.ping(pollingStationNode, 2000);
-    }
+
 
     public boolean pingCS() {
         //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
@@ -86,19 +69,7 @@ public class Network {
         return otpNode.ping(centralStationNode, 2000);
     }
 
-    public void sendStringToPollingStation(String message) {
-        OtpErlangString msg = new OtpErlangString(message);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg});
-        otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
-    }
 
-    public void sendStringToCentralStation(String message) {
-        OtpErlangString msg = new OtpErlangString(message);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg});
-        otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
-    }
 
     public void sendAtomToCentralStation(String message) {
         OtpErlangAtom msg = new OtpErlangAtom(message);
@@ -107,55 +78,15 @@ public class Network {
         otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
     }
 
-    public void sendAtomToPollingStation(String message) {
-        OtpErlangAtom msg = new OtpErlangAtom(message);
+
+    public void sendStringToCentralStation(String message) {
+        OtpErlangString msg = new OtpErlangString(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
-        //OtpErlangPid psPid = otpNode.whereis(pollingStationMbox);
-        //otpMbox.send(psPid, msgTuple);
-        otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
+        otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
     }
 
 
-    public void sendBytes(byte[] message) {
-        OtpErlangBinary msg = new OtpErlangBinary(message);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg});
-        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
-    }
-
-    public void sendSigned(byte[] message, byte[] sign) {
-        OtpErlangBinary msg = new OtpErlangBinary(message);
-        OtpErlangBinary s = new OtpErlangBinary(sign);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg, s});
-        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
-    }
-
-    public void sendSigned(byte[] message, String signerID,byte[] sign) {
-        OtpErlangBinary msg = new OtpErlangBinary(message);
-        OtpErlangBinary s = new OtpErlangBinary(sign);
-        OtpErlangString id= new OtpErlangString(signerID);
-        OtpErlangTuple payload = new OtpErlangTuple(
-                new OtpErlangObject[]{msg,id, s});
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(),payload});
-        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
-
-    }
-
-    public void sendVoteSigned(byte[] message, String signerID,byte[] sign) {
-        OtpErlangBinary msg = new OtpErlangBinary(message);
-        OtpErlangBinary s = new OtpErlangBinary(sign);
-        OtpErlangString id= new OtpErlangString(signerID);
-        OtpErlangAtom atom= new OtpErlangAtom("vote");
-        OtpErlangTuple payload = new OtpErlangTuple(
-                new OtpErlangObject[]{msg,id, s});
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(),payload, atom});
-        otpMbox.send("polling_station_endpoint", pollingStationNode, msgTuple);
-
-    }
 
     public String receiveString() {
         String res = null;
@@ -176,24 +107,7 @@ public class Network {
         return res;
     }
 
-    public int receiveInt() {
-        int res;
-        while (true) {
-            try {
-                OtpErlangObject message = otpMbox.receive();
-                System.out.println("received something");
-                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-                OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
-                //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
-                OtpErlangLong payload = (OtpErlangLong) erlangTuple.elementAt(1);
-                res = payload.intValue();
-                break;
 
-            } catch (OtpErlangDecodeException | OtpErlangExit | OtpErlangRangeException ignored) {
-            }
-        }
-        return res;
-    }
 
     public byte[] receiveBytes() {
         while (true) {
@@ -234,18 +148,18 @@ public class Network {
 
     }
 
-    public boolean receiveAck() {
-        try {
-            OtpErlangObject message = otpMbox.receive();
-            System.out.println("received something");
-            OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-            OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
-            OtpErlangAtom payload = (OtpErlangAtom) erlangTuple.elementAt(1);
-            if (payload.toString().equals("ok"))
-                return true;
-        } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
-            return false;
-        }
-        return false;
-    }
+//    public boolean receiveAck() {
+//        try {
+//            OtpErlangObject message = otpMbox.receive();
+//            System.out.println("received something");
+//            OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
+//            OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
+//            OtpErlangAtom payload = (OtpErlangAtom) erlangTuple.elementAt(1);
+//            if (payload.toString().equals("ok"))
+//                return true;
+//        } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
+//            return false;
+//        }
+//        return false;
+//    }
 }
