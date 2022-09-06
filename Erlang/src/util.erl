@@ -15,6 +15,9 @@
 -export([read_key/1]).
 
 read_key(Path)->
-  {ok, PemBin} = file:read_file(Path),
+  io:format("keyfile: ~s ~n",[basePath()++Path]),
+  {ok, PemBin} = file:read_file(basePath()++Path),
   [DSAEntry] =  public_key:pem_decode(PemBin),
   public_key:pem_entry_decode(DSAEntry).
+
+basePath()-> "../../resources/".

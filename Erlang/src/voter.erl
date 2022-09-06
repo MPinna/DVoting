@@ -26,6 +26,7 @@
 %% 4> mnesia:info().
 %%
 init() ->
+  mnesia:start(),
   mnesia:create_table(voter,
                       [{attributes, record_info(fields, voter)}]).
 
@@ -65,7 +66,8 @@ select_all_who_voted() ->
     },
     mnesia:select(voter, [{HasVoted, [], ['$1', '$2']}])
   end,
-  mnesia:transaction(SelectAllWhoVoted).
+  {atomic,Turnout}=mnesia:transaction(SelectAllWhoVoted),
+  Turnout.
 
 %% Get the public key of a voter given their id
 get_voter_pub_key_from_id(Voter_id) ->
@@ -76,18 +78,20 @@ get_voter_pub_key_from_id(Voter_id) ->
     },
     mnesia:select(voter, [{Voter, [], ['$1']}])
                        end,
-  mnesia:transaction(SelectVoterPubKey).
+  {atomic,[Key]}=mnesia:transaction(SelectVoterPubKey),
+  Key.
 
 % Check if a voter with given ID has already cast their vote
 voter_has_voted(Voter_id) -> %TODO check if this works
   CheckVoter = fun() ->
     VoterHasVoted = #voter{voter_id = Voter_id,
-        has_voted = '$',
+        has_voted = '$1',
         _  =  '_'
       },
     mnesia:select(voter, [{VoterHasVoted, [], ['$1']}])
                   end,
-  mnesia:transaction(CheckVoter).
+  {atomic,[HasVoted]}=mnesia:transaction(CheckVoter),
+  HasVoted.
 
 
 % remove a voter from the db given their ID
@@ -110,19 +114,19 @@ test_insert() ->
     name = "Mario",
     surname = "Rossi",
     dob = "1970-1-1",
-    pub_key = asd,
+    pub_key = "v2_public.pem",
     has_voted = false},
   Vot2 = #voter{ voter_id = 3,
     name = "Luigi",
     surname = "Verdi",
     dob = "1970-1-2",
-    pub_key = qwe,
+    pub_key = "v3_public.pem",
     has_voted = false},
   Vot3 = #voter{ voter_id = 4,
     name = "Wario",
     surname = "Gialli",
     dob = "1970-1-3",
-    pub_key = zxc,
+    pub_key = "v4_public.pem",
     has_voted = false},
   insert_voter(Vot1),
   insert_voter(Vot2),

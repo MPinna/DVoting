@@ -29,13 +29,13 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
   %% 5 seconds ('period'), the entire supervisor crashes
   %% with all its children.
   SupFlags = #{strategy => one_for_one,
-    intensity => 1,
+    intensity => 4,
     period => 5},
   CentralStation = #{id => centralStation,
     start => {centralStation, start, []},
     restart => permanent},
-  %List=[ps@studente76, ps@studente77, ps@studente78],
-  List=['ps@studente76'],
+  List=[ps@studente76, ps@studente77, ps@studente78],
+  %List=['ps@studente76'],
   %List=['ps@172.18.0.76'],
   %% permanent means that this process is always restarted
   PollingStations = polling_stations(List),
@@ -46,12 +46,12 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
 
 polling_stations(List)->polling_stations([],List, 1).
 
-
 % fill the polling_stations_list, assign nodes and IDs
 polling_stations(Ch,[], _)->
   Ch;
-polling_stations(Ch, [Elem], N)->polling_stations(Ch, [Elem,[]], N);
-polling_stations(Ch,[Head,Tail], N)->
+%polling_stations(Ch, [Elem], N)->polling_stations(Ch, [Elem,[]], N);
+polling_stations(Ch,List, N)->
+  [Head|Tail]=List,
   PS=#{id => Head,
     start => {pollingStation, start, [Head, N]},
     restart => permanent},

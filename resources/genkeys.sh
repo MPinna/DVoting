@@ -7,8 +7,9 @@ openssl ec -in cs_keys/cs_key.pem -pubout -out cs_keys/cs_public.pem
 openssl req -new -x509 -key cs_keys/cs_key.pem \
 -passin pass:password --out cs_keys/cs_cert.pem -days 360 \
 -subj "/C=IT/ST=.../L=.../O=.../OU=.../CN=gov/emailAddress=..."
-mkdir ../crypto/src/main/java/resources
+mkdir ../crypto/src/main/resources
 cp cs_keys/cs_cert.pem ../crypto/src/main/resources
+cp ./* ../CentralStation/src/main/resources
 mkdir ps_keys
 
 for ID in 1 2 3

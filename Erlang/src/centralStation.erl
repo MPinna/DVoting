@@ -32,7 +32,7 @@ start()->
   end.
 
 init()->
-  PrvKey =util:read_key("../../resources/cs_keys/cs_key.pem"),
+  PrvKey =util:read_key("cs_keys/cs_key.pem"),
   seggio:init(),
   seggio:test_insert(),
   %global:register_name(central_station_endpoint, self()),
@@ -46,7 +46,7 @@ cs_loop(PrvKey, N) ->
         io:format("ps id: ~w \n", [PS]),
         KeyUrl=seggio:get_seggio_pub_key_from_id(PS),
         io:format("ps key url: ~w \n", [KeyUrl]),
-        PubKey = util:read_key(KeyUrl),
+        PubKey = util:read_key("ps_keys/"++KeyUrl),
         Bin=term_to_binary(Payload),
         true= public_key:verify(Bin,sha256, Sign,PubKey),
         {Vote, SeqN}=Payload,
@@ -59,8 +59,9 @@ cs_loop(PrvKey, N) ->
           true-> io:format("\n Not valid sign \n\n"),
             cs_loop(PrvKey,N)
         end
-        catch _ -> cs_loop(PrvKey,N) end;
-
+        catch ErrorType:ErrorReason:Stacktrace ->
+          io:format("~w, ~w, ~w ~n", [ ErrorType,ErrorReason,Stacktrace]),
+          cs_loop(PrvKey,N) end;
     {Sender,request_candidates} ->
       ok=send_candidates(Sender, PrvKey),
       cs_loop(PrvKey,N);
