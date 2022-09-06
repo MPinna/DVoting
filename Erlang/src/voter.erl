@@ -10,7 +10,8 @@
 -author("marco").
 
 %% API
--export([init/0, insert_voter/1, set_voter_flag/1, get_voter_pub_key_from_id/1, test_insert/0, select_all_who_voted/0]).
+-export([init/0, insert_voter/1, set_voter_flag/1, get_voter_pub_key_from_id/1,
+  test_insert/0, select_all_who_voted/0, voter_has_voted/1, delete_voter/1]).
 
 %% https://www.erlang.org/doc/man/qlc.html
 %% QLC = Query List Comprehensions
@@ -21,7 +22,7 @@
 
 %% 1> mnesia:create_schema([node()]).
 %% 2> mnesia:start().
-%% 3> company:init().
+%% 3> voter:init().
 %% 4> mnesia:info().
 %%
 init() ->
@@ -76,6 +77,33 @@ get_voter_pub_key_from_id(Voter_id) ->
     mnesia:select(voter, [{Voter, [], ['$1']}])
                        end,
   mnesia:transaction(SelectVoterPubKey).
+
+% Check if a voter with given ID has already cast their vote
+voter_has_voted(Voter_id) -> %TODO check if this works
+  CheckVoter = fun() ->
+    VoterHasVoted = #voter{voter_id = Voter_id,
+        has_voted = '$',
+        _  =  '_'
+      },
+    mnesia:select(voter, [{VoterHasVoted, [], ['$1']}])
+                  end,
+  mnesia:transaction(CheckVoter).
+
+
+% remove a voter from the db given their ID
+delete_voter(Voter_id) ->
+  % syntax of following line:   read(table, key, type of lock)
+  DeleteVoter = fun () ->
+        case mnesia:read(voter, Voter_id, write) of
+          [Voter] ->
+            mnesia:delete({voter, Voter_id}),
+            {ok, Voter};
+          [] ->
+            mnesia:abort(not_exist)
+        end
+      end,
+  mnesia:transaction(DeleteVoter).
+
 
 test_insert() ->
   Vot1 = #voter{ voter_id = 2,
