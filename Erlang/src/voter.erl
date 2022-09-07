@@ -28,7 +28,12 @@
 init() ->
   mnesia:start(),
   mnesia:create_table(voter,
-                      [{attributes, record_info(fields, voter)}]).
+                      [
+                        {attributes, record_info(fields, voter)},
+                        % TODO check if this is the proper way to pass current node
+                        {disc_copies, [node()]}
+                      ]
+  ).
 
 insert_voter(Vot) ->
 

@@ -24,7 +24,12 @@
 init() ->
   mnesia:start(),
   mnesia:create_table(seggio,
-    [{attributes, record_info(fields, seggio)}]).
+                      [
+                        {attributes, record_info(fields, seggio)},
+                        % TODO check if this is the proper way to pass current node
+                        {disc_copies, [node()]}
+                      ]
+  ).
 
 
 % insert a new polling station into the seggio db
