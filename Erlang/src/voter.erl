@@ -60,11 +60,9 @@ set_voter_flag(Voter_id) ->
 select_all_who_voted() ->
   SelectAllWhoVoted = fun() ->
     HasVoted = #voter{ has_voted = true,
-      name = '$1',
-      surname = '$2',
       _ = '_'
     },
-    mnesia:select(voter, [{HasVoted, [], ['$1', '$2']}])
+    mnesia:select(voter, [{HasVoted, [], ['$_']}])
   end,
   {atomic,Turnout}=mnesia:transaction(SelectAllWhoVoted),
   Turnout.
@@ -113,19 +111,19 @@ test_insert() ->
   Vot1 = #voter{ voter_id = 2,
     name = "Mario",
     surname = "Rossi",
-    dob = "1970-1-1",
+    dob = "1970-01-01",
     pub_key = "v2_public.pem",
     has_voted = false},
   Vot2 = #voter{ voter_id = 3,
     name = "Luigi",
     surname = "Verdi",
-    dob = "1970-1-2",
+    dob = "1970-01-02",
     pub_key = "v3_public.pem",
     has_voted = false},
   Vot3 = #voter{ voter_id = 4,
     name = "Wario",
     surname = "Gialli",
-    dob = "1970-1-3",
+    dob = "1970-01-03",
     pub_key = "v4_public.pem",
     has_voted = false},
   insert_voter(Vot1),
