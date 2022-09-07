@@ -15,6 +15,8 @@ public class Network {
     protected static OtpNode otpNode;
     protected static OtpMbox otpMbox;
 
+    protected int wait=2000;
+
     protected String centralStationMbox = "central_station_endpoint";
 
     String centralStationNode = "cs@studente75";
@@ -66,7 +68,7 @@ public class Network {
     public boolean pingCS() {
         //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
         //otpMbox.whereis(pollingStationNode);
-        return otpNode.ping(centralStationNode, 2000);
+        return otpNode.ping(centralStationNode, wait);
     }
 
 
@@ -89,30 +91,25 @@ public class Network {
 
 
     public String receiveString() {
-        String res = null;
-        while (true) {
+
             try {
-                OtpErlangObject message = otpMbox.receive();
+                OtpErlangObject message = otpMbox.receive(wait);
                 System.out.println("received something");
                 OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
                 //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangString payload = (OtpErlangString) erlangTuple.elementAt(1);
-                res = payload.stringValue();
-                break;
+                return payload.stringValue();
 
-            } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
-            }
-        }
-        return res;
+            } catch (OtpErlangDecodeException | OtpErlangExit ignored) {}
+        return null;
     }
 
 
 
     public byte[] receiveBytes() {
-        while (true) {
-            try {
-                OtpErlangObject message = otpMbox.receive();
+       try{
+                OtpErlangObject message = otpMbox.receive(wait);
                 System.out.println("received something");
                 OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
@@ -120,7 +117,7 @@ public class Network {
 
             } catch (OtpErlangDecodeException | OtpErlangExit | ClassCastException ignored) {
             }
-        }
+    return null;
 
     }
 
@@ -130,21 +127,21 @@ public class Network {
      * @return 2 arrays of bytes in a list, the 1st is the message, the 2nd is the sign
      */
     public List<byte[]> receiveSigned() {
-        List<byte[]> res = new ArrayList<>(2);
-        while (true) {
+
             try {
-                OtpErlangObject message = otpMbox.receive();
+                OtpErlangObject message = otpMbox.receive(wait);
                 System.out.println("received something");
                 OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangBinary msg = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangBinary s = (OtpErlangBinary) erlangTuple.elementAt(2);
+                List<byte[]> res = new ArrayList<>(2);
                 res.add(msg.binaryValue());
                 res.add(s.binaryValue());
                 return res;
 
             } catch (OtpErlangDecodeException | OtpErlangExit | ClassCastException ignored) {
             }
-        }
+        return null;
 
     }
 

@@ -15,17 +15,24 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 
 @WebServlet(name = "AdminServlet", value = "/Admin")
 @MultipartConfig
 public class AdminServlet extends HttpServlet {
 
-    public static String ActionSUSPEND ="suspend_vote";
-    public static String ActionSTOP ="stop_vote";
-    public static String ActionRESUME="resume_vote";
+    public static final String ActionSUSPEND ="suspend_vote";
+    public static final String ActionSTOP ="stop_vote";
+    public static final String ActionRESUME="resume_vote";
 
-    public static String ActionEXIT="exit";
+    public static final String ActionEXIT="exit";
+
+    public static final String ActionSEARCH="search";
+
+    public static final String ActionLIST="get_list";
+
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -35,14 +42,33 @@ public class AdminServlet extends HttpServlet {
             return;
         }
         try {
-            if(request.getParameter("action").equals(ActionEXIT)){
-                request.getSession().invalidate();
-                response.sendRedirect(request.getContextPath());
-                return;
+            String action=request.getParameter("action");
+            switch (action){
+                case ActionEXIT: {
+                    request.getSession().invalidate();
+                    response.sendRedirect(request.getContextPath());
+                    return;
+                }
+                case ActionSEARCH: {
+                    WebAppNetwork net = new WebAppNetwork(request.getSession().getId());
+                    String VoterID = request.getParameter("searchVoterID");
+                    net.sendCommandToPollingStation(action, VoterID);
+                    Voter v = net.receiveVoter();
+                    request.getSession().setAttribute("searchVoter", v);
+                    break;
+                }
+                case ActionLIST: {
+                    WebAppNetwork net = new WebAppNetwork(request.getSession().getId());
+                    net.sendCommandToPollingStation(action);
+                    List<Voter> v = net.receiveVoterList();
+                    request.getSession().setAttribute("voterList", v);
+                    break;
+                }
+                default: {
+                    WebAppNetwork net = new WebAppNetwork(request.getSession().getId());
+                    net.sendAtomToPollingStation(action);
+                }
             }
-
-            WebAppNetwork net= new WebAppNetwork(request.getSession().getId());
-            net.sendAtomToPollingStation(request.getParameter("action"));
 
         }catch (Exception e){
             e.printStackTrace();

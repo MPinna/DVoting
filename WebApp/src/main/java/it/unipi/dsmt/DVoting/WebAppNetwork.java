@@ -9,6 +9,8 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebAppNetwork extends Network {
     static String pollingStationNode = null;
@@ -37,7 +39,7 @@ public class WebAppNetwork extends Network {
     public boolean pingPS() {
         //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
         //otpMbox.whereis(pollingStationNode);
-        return otpNode.ping(pollingStationNode, 2000);
+        return otpNode.ping(pollingStationNode, wait);
     }
 
 
@@ -97,11 +99,25 @@ public class WebAppNetwork extends Network {
         otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 
+    public void sendCommandToPollingStation(String command){
+        sendAtomToPollingStation(command);
+    }
+
+    public void sendCommandToPollingStation(String arg, String command) {
+        OtpErlangAtom msg = new OtpErlangAtom(command);
+        OtpErlangString OTParg= new OtpErlangString(arg);
+        OtpErlangTuple msgTuple = new OtpErlangTuple(
+                new OtpErlangObject[]{otpMbox.self(), OTParg,msg});
+        //OtpErlangPid psPid = otpNode.whereis(pollingStationMbox);
+        //otpMbox.send(psPid, msgTuple);
+        otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
+    }
+
     public int receiveInt() {
         int res;
         while (true) {
             try {
-                OtpErlangObject message = otpMbox.receive();
+                OtpErlangObject message = otpMbox.receive(wait);
                 System.out.println("received something");
                 OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
@@ -116,26 +132,42 @@ public class WebAppNetwork extends Network {
         return res;
     }
 
-    public Object[] receiveList() {
-        Object[] res;
-        while (true) {
-            try {
-                OtpErlangObject message = otpMbox.receive();
+    public Voter receiveVoter() {
+        try {
+                OtpErlangObject message = otpMbox.receive(wait);
                 System.out.println("received something");
                 OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
                 //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
-                OtpErlangList payload = (OtpErlangList) erlangTuple.elementAt(1);
-                res=new Object[payload.elements().length];
-                for (int i = 0; i < payload.elements().length; i++) {
-                    res[i]=payload.elementAt(i);
-                }
-                break;
+                OtpErlangTuple payload = (OtpErlangTuple) erlangTuple.elementAt(1);
 
-            } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
-            }
+                return new Voter(payload);
+
+            } catch (OtpErlangException e) {
+            e.printStackTrace();
+            return null;
         }
-        return res;
+
+    }
+
+    public List<Voter> receiveVoterList() {
+        List<Voter> ret=new ArrayList<Voter>();
+        try {
+            OtpErlangObject message = otpMbox.receive(wait);
+            System.out.println("received something");
+            OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
+            OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
+            //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
+            OtpErlangList payload = (OtpErlangList) erlangTuple.elementAt(1);
+            for (OtpErlangObject elem : payload) {
+                ret.add(new Voter((OtpErlangTuple) elem));
+            }
+
+        } catch (OtpErlangException e) {
+            e.printStackTrace();
+        }
+        return ret;
+
     }
 
 }

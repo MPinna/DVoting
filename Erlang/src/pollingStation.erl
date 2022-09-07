@@ -40,6 +40,12 @@ send_turnout(Admin)->
   Admin !{self(), Turnout},
   io:format("turnout sent ~p ~n",[Admin]).
 
+
+send_list(Admin) ->
+  List=voter:select_all_who_voted(),
+  Admin !{self(), List},
+  io:format("list ~w ~n sent ~p ~n",[List,Admin]).
+
 ps_loop(Key, N, Id) ->
   %%Term = io:get_chars("prompt ", 5),
   receive
@@ -50,6 +56,12 @@ ps_loop(Key, N, Id) ->
       ps_loop(Key,  N, Id);
     {Admin, get_turnout}->
       send_turnout(Admin),
+      ps_loop(Key,  N, Id);
+    {Admin, get_list}->
+      send_list(Admin),
+      ps_loop(Key,  N, Id);
+    {Admin, VoterID, search}->
+      Admin ! {self(), "not_implemented"},
       ps_loop(Key,  N, Id);
     {_Booth, Payload, vote} ->
       try
@@ -90,6 +102,9 @@ ps_suspended(Key,N, Id) ->
     {Admin, get_turnout}->
       send_turnout(Admin),
       ps_suspended(Key,N, Id);
+    {Admin, get_list}->
+      send_list(Admin),
+      ps_suspended(Key,N, Id);
     {Admin,get_status} ->Admin !{self(), "suspended"},
       ps_suspended(Key,N, Id);
     _ ->  ps_suspended(Key,N, Id)
@@ -100,6 +115,9 @@ ps_stopped() ->
   receive
     {Admin, get_turnout}->
       send_turnout(Admin),
+      ps_stopped();
+    {Admin, get_list}->
+      send_list(Admin),
       ps_stopped();
     {Sender,_} ->Sender !{self(), "stopped"},
       ps_stopped()
