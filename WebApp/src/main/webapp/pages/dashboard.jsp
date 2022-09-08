@@ -1,4 +1,3 @@
-<%@ taglib prefix = "c" uri = "http://java.sun.com/jsp/jstl/core" %>
 <%@ page import="it.unipi.dsmt.DVoting.AdminServlet" %>
 <%@ page import="it.unipi.dsmt.DVoting.Voter" %>
 <%@ page import="java.util.List" %>

@@ -54,13 +54,13 @@ public class CentralStationDashboard {
             System.out.println("cookie: " + cookie);
             System.out.println("TmBox: " + mBox);
             if (n.pingCS()) {
-                System.out.println("server@localhost is up.");
+                System.out.println(nodeId+" is up.");
             } else {
-                System.out.println("server@localhost is down");
+                System.out.println(nodeId+" is down");
             }
             PrivateKey pk;
             InputStream filePath=CentralStationDaemon.class.getResourceAsStream("/cs_keys/cs_key.pem");
-            System.out.println(filePath);
+            //System.out.println(filePath);
             //File privateKeyFile = new File(filePath); // private key file in PEM format
             pk= Crypto.getPrivateKey(filePath);
             if(pk==null){
@@ -90,8 +90,12 @@ public class CentralStationDashboard {
                 System.out.println("turnout: "+t);
                 System.out.println("press S to stop, ENTER to update turnout");
             }while(!in.nextLine().equals("S"));
-            n.sendAtomToCentralStation("close_vote"); // TODO wait until cs has elaborated the preceding votes
-            daemon.interrupt();
+            n.sendAtomToCentralStation("close_vote");
+            try {
+                daemon.join();
+            }catch (InterruptedException e) {
+               e.printStackTrace();
+            }
             System.out.println(countVotes(db,pk));
             db.disconnect();
 

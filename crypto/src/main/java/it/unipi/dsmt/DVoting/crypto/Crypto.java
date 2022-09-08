@@ -223,7 +223,7 @@ public  class Crypto {
             }
             assert kp != null;
             return kp.getPrivate();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

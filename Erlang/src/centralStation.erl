@@ -65,7 +65,7 @@ cs_loop(PrvKey, N) ->
     {Sender,request_candidates} ->
       ok=send_candidates(Sender, PrvKey),
       cs_loop(PrvKey,N);
-    {central@localhost, close_vote} ->cs_stopped();
+    {_, close_vote} ->cs_stopped();
 
     _ -> io:format("~n watherver cs ~n"),
       cs_loop(PrvKey, N)
@@ -80,6 +80,8 @@ send_candidates(Sender, Key) ->
   ok.
 
 cs_stopped() ->
+  {cs, central@localhost} ! {self(),vote_closed},
+  io:format(" vote stoppped ~n"),
   receive
     {Sender,_} ->Sender !{self(), "stopped"},
       cs_stopped()

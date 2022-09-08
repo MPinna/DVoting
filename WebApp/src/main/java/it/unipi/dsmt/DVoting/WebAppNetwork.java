@@ -113,9 +113,8 @@ public class WebAppNetwork extends Network {
         otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 
-    public int receiveInt() {
-        int res;
-        while (true) {
+    public Integer receiveInt() {
+
             try {
                 OtpErlangObject message = otpMbox.receive(wait);
                 System.out.println("received something");
@@ -123,13 +122,11 @@ public class WebAppNetwork extends Network {
                 OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
                 //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangLong payload = (OtpErlangLong) erlangTuple.elementAt(1);
-                res = payload.intValue();
-                break;
+                return payload.intValue();
 
-            } catch (OtpErlangDecodeException | OtpErlangExit | OtpErlangRangeException ignored) {
+            } catch (Exception ignored) {
             }
-        }
-        return res;
+        return null;
     }
 
     public Voter receiveVoter() {
