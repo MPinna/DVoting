@@ -22,14 +22,20 @@
 -include("seggio.hrl").
 
 init() ->
+  application:set_env(mnesia, dir, "seggio"),
+  mnesia:create_schema([node()]),
   mnesia:start(),
-  mnesia:create_table(seggio,
+  CreateTable = mnesia:create_table(seggio,
                       [
                         {attributes, record_info(fields, seggio)},
                         % TODO check if this is the proper way to pass current node
                         {disc_copies, [node()]}
                       ]
-  ).
+  ),
+  case CreateTable of
+    {aborted,{already_exists,seggio}} -> table_already_exists;
+    {atomic,ok} -> {atomic,ok}
+  end.
 
 
 % insert a new polling station into the seggio db
