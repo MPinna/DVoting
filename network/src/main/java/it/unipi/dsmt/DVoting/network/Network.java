@@ -5,10 +5,12 @@ import com.ericsson.otp.erlang.*;
 import java.io.EOFException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 
+/**
+ * network class to communicate with otpNodes
+ */
 public class Network {
 
     protected String nodeId = "senderNode@localhost";
@@ -16,7 +18,7 @@ public class Network {
     protected static OtpNode otpNode;
     protected static OtpMbox otpMbox;
 
-    protected int wait=2000;
+    protected int wait = 2000; // wait time on receive
 
     protected String centralStationMbox = "central_station_endpoint";
 
@@ -36,12 +38,7 @@ public class Network {
             System.out.println(otpMbox.getName());
 
         }
-
-        System.out.println(Arrays.toString(otpMbox.getNames()));
-        System.out.println(Arrays.toString(otpNode.getNames()));
-
     }
-
 
 
     /**
@@ -62,13 +59,14 @@ public class Network {
     }
 
 
-
+    /**
+     * test connection with central station
+     *
+     * @return boolean
+     */
     public boolean pingCS() {
-        //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
-        //otpMbox.whereis(pollingStationNode);
         return otpNode.ping(centralStationNode, wait);
     }
-
 
 
     public void sendAtomToCentralStation(String message) {
@@ -79,61 +77,52 @@ public class Network {
     }
 
 
-    public void sendStringToCentralStation(String message) {
-        OtpErlangString msg = new OtpErlangString(message);
-        OtpErlangTuple msgTuple = new OtpErlangTuple(
-                new OtpErlangObject[]{otpMbox.self(), msg});
-        otpMbox.send(centralStationMbox, centralStationNode, msgTuple);
-    }
-
-
-
     public String receiveString() {
 
-            try {
-                OtpErlangObject message = otpMbox.receive(wait);
-                //System.out.println("received something");
-                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-                OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
-                //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
-                OtpErlangString payload = (OtpErlangString) erlangTuple.elementAt(1);
-                return payload.stringValue();
+        try {
+            OtpErlangObject message = otpMbox.receive(wait);
+            //System.out.println("received something");
+            OtpErlangTuple erlangTuple = (OtpErlangTuple) message;
+            OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
+            //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
+            OtpErlangString payload = (OtpErlangString) erlangTuple.elementAt(1);
+            return payload.stringValue();
 
-            } catch (OtpErlangDecodeException | OtpErlangExit ignored) {}
+        } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
+        }
         return null;
     }
 
 
-
     public byte[] receiveBytes() {
-       try{
-                OtpErlangObject message = otpMbox.receive(wait);
-                //System.out.println("received something");
-                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-                OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
-                return payload.binaryValue();
+        try {
+            OtpErlangObject message = otpMbox.receive(wait);
+            //System.out.println("received something");
+            OtpErlangTuple erlangTuple = (OtpErlangTuple) message;
+            OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
+            return payload.binaryValue();
 
-            } catch (Exception ignored) {
-            }
-    return null;
+        } catch (Exception ignored) {
+        }
+        return null;
 
     }
 
     public byte[] receiveBytesInfiniteWait() throws EOFException {
-        try{
+        try {
             OtpErlangObject message = otpMbox.receive();
             System.out.println("received something");
-            OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-            if(erlangTuple.elementAt(1) instanceof OtpErlangBinary ){
+            OtpErlangTuple erlangTuple = (OtpErlangTuple) message;
+            if (erlangTuple.elementAt(1) instanceof OtpErlangBinary) {
                 OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
                 return payload.binaryValue();
-            }else if(erlangTuple.elementAt(1) instanceof OtpErlangAtom){
+            } else if (erlangTuple.elementAt(1) instanceof OtpErlangAtom) {
                 OtpErlangAtom payload = (OtpErlangAtom) erlangTuple.elementAt(1);
-                if(payload.atomValue().equals("vote_closed"))
+                if (payload.atomValue().equals("vote_closed"))
                     throw new EOFException();
             }
 
-        } catch (OtpErlangDecodeException |  ClassCastException ignored) {
+        } catch (OtpErlangDecodeException | ClassCastException ignored) {
 
         } catch (OtpErlangExit e) {
             throw new RuntimeException(e);
@@ -149,35 +138,20 @@ public class Network {
      */
     public List<byte[]> receiveSigned() {
 
-            try {
-                OtpErlangObject message = otpMbox.receive(wait);
-                //System.out.println("received something");
-                OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-                OtpErlangBinary msg = (OtpErlangBinary) erlangTuple.elementAt(1);
-                OtpErlangBinary s = (OtpErlangBinary) erlangTuple.elementAt(2);
-                List<byte[]> res = new ArrayList<>(2);
-                res.add(msg.binaryValue());
-                res.add(s.binaryValue());
-                return res;
+        try {
+            OtpErlangObject message = otpMbox.receive(wait);
+            //System.out.println("received something");
+            OtpErlangTuple erlangTuple = (OtpErlangTuple) message;
+            OtpErlangBinary msg = (OtpErlangBinary) erlangTuple.elementAt(1);
+            OtpErlangBinary s = (OtpErlangBinary) erlangTuple.elementAt(2);
+            List<byte[]> res = new ArrayList<>(2);
+            res.add(msg.binaryValue());
+            res.add(s.binaryValue());
+            return res;
 
-            } catch (OtpErlangDecodeException | OtpErlangExit | ClassCastException ignored) {
-            }
+        } catch (OtpErlangDecodeException | OtpErlangExit | ClassCastException ignored) {
+        }
         return null;
 
     }
-
-//    public boolean receiveAck() {
-//        try {
-//            OtpErlangObject message = otpMbox.receive();
-//            System.out.println("received something");
-//            OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
-//            OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
-//            OtpErlangAtom payload = (OtpErlangAtom) erlangTuple.elementAt(1);
-//            if (payload.toString().equals("ok"))
-//                return true;
-//        } catch (OtpErlangDecodeException | OtpErlangExit ignored) {
-//            return false;
-//        }
-//        return false;
-//    }
 }

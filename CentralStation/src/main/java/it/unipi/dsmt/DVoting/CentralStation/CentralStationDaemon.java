@@ -6,6 +6,9 @@ import java.io.EOFException;
 import java.util.Base64;
 
 
+/**
+ * listener for receive and store encrypted votes
+ */
 public class CentralStationDaemon extends Thread{
     private final Network n;
     private final DatabaseManager db;
@@ -21,17 +24,18 @@ public class CentralStationDaemon extends Thread{
            try {
                payload = n.receiveBytesInfiniteWait();
            }catch (RuntimeException e){
-               e.printStackTrace();
+               e.printStackTrace(); // error happened
                break;
            } catch (EOFException e) {
-               System.out.println("vote_closed received");
+               System.out.println("vote_closed received"); // voting has been closed
                break;
            }
             if(payload==null){
                continue;
            }
-           System.out.println("message " + new String(payload));
-           db.addVote(Base64.getEncoder().encodeToString(payload));
+            String encoded=Base64.getEncoder().encodeToString(payload);
+           System.out.println("vote received: " + encoded);
+           db.addVote(encoded);
         }
         System.out.println("daemon terminated");
 

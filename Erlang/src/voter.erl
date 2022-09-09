@@ -26,16 +26,13 @@
 %% 4> mnesia:info().
 %%
 init() ->
-  %TODO pass database folder here and not from CLI
   application:set_env(mnesia, dir, "voter"),
   mnesia:create_schema([node()]),
   mnesia:start(),
-  %TODO check if table already exists
   CreateTable = mnesia:create_table(voter,
                       [
                         {attributes, record_info(fields, voter)},
-                        % TODO check if this is the proper way to pass current node
-                        {disc_copies, [node()]}
+                        {disc_copies, [node()]} % store a permanent copy
                       ]
   ),
   case CreateTable of

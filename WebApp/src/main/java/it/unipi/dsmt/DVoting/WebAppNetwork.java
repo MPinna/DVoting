@@ -12,6 +12,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * extension of network class for usage in webapp application
+ */
 public class WebAppNetwork extends Network {
     static String pollingStationNode = null;
     protected String pollingStationMbox = "polling_station_endpoint";
@@ -37,8 +40,6 @@ public class WebAppNetwork extends Network {
     }
 
     public boolean pingPS() {
-        //System.out.println(otpMbox.getName() +".: "+otpNode.whereis(otpMbox.getName()));
-        //otpMbox.whereis(pollingStationNode);
         return otpNode.ping(pollingStationNode, wait);
     }
 
@@ -77,6 +78,9 @@ public class WebAppNetwork extends Network {
 
     }
 
+    /**
+     * send signed command
+     */
     public void sendSigned(byte[] message, String signerID,byte[] sign, String action) {
         OtpErlangBinary msg = new OtpErlangBinary(message);
         OtpErlangBinary s = new OtpErlangBinary(sign);
@@ -94,22 +98,22 @@ public class WebAppNetwork extends Network {
         OtpErlangAtom msg = new OtpErlangAtom(message);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), msg});
-        //OtpErlangPid psPid = otpNode.whereis(pollingStationMbox);
-        //otpMbox.send(psPid, msgTuple);
         otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 
+    /**
+     * send unsigned command
+     */
     public void sendCommandToPollingStation(String command){
         sendAtomToPollingStation(command);
     }
+
 
     public void sendCommandToPollingStation(String arg, String command) {
         OtpErlangAtom msg = new OtpErlangAtom(command);
         OtpErlangString OTParg= new OtpErlangString(arg);
         OtpErlangTuple msgTuple = new OtpErlangTuple(
                 new OtpErlangObject[]{otpMbox.self(), OTParg,msg});
-        //OtpErlangPid psPid = otpNode.whereis(pollingStationMbox);
-        //otpMbox.send(psPid, msgTuple);
         otpMbox.send(pollingStationMbox, pollingStationNode, msgTuple);
     }
 
@@ -135,7 +139,6 @@ public class WebAppNetwork extends Network {
                 System.out.println("received something");
                 OtpErlangTuple erlangTuple= (OtpErlangTuple) message;
                 OtpErlangPid senderPID = (OtpErlangPid) erlangTuple.elementAt(0);
-                //OtpErlangBinary payload = (OtpErlangBinary) erlangTuple.elementAt(1);
                 OtpErlangTuple payload = (OtpErlangTuple) erlangTuple.elementAt(1);
 
                 return new Voter(payload);

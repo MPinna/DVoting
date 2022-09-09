@@ -12,10 +12,10 @@
 -include_lib("public_key/include/public_key.hrl").
 
 %% API
--export([read_key/1]).
+-export([read_key/1, basePath/0]).
 
 read_key(Path)->
-  io:format("keyfile: ~s ~n",[basePath()++Path]),
+  io:format("[utl] keyfile: ~s ~n",[basePath()++Path]),
   {ok, PemBin} = file:read_file(basePath()++Path),
   [DSAEntry] =  public_key:pem_decode(PemBin),
   public_key:pem_entry_decode(DSAEntry).

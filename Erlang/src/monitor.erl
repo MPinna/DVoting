@@ -10,19 +10,19 @@
 -author("yuri").
 -compile(import_all).
 %% API
--export([startServices/0, start_link/0, init/1]).
+-export([start_link/0, init/1]).
 
 start_link() ->
   Args = [], %% TODO pass the host list as arg
   %% IMPORTANT: supervisor:start_link register globally the supervisor as "my_supervisor"
   {State, PidMonitor} = supervisor:start_link({global, ?MODULE}, ?MODULE, Args),
-  io:format(" [MONITOR] Supervisor pid is ~p state is ~p~n", [PidMonitor, State]),
+  io:format("[MONITOR] Supervisor pid is ~p state is ~p~n", [PidMonitor, State]),
   PidMonitor.
 
 
 %% The init callback function is called by the start_link
 init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
-  io:format(" [MONITOR] Init function started ~n"),
+  io:format("[MONITOR] Init function started ~n"),
   %% Configuration options common to all children.
   %% If a child process crashes, restart only that one (one_for_one).
   %% If there is more than 1 crash ('intensity') in
@@ -36,7 +36,6 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
     restart => permanent},
   List=[ps@studente76, ps@studente77, ps@studente78],
   %List=['ps@studente76'],
-  %List=['ps@172.18.0.76'],
   %% permanent means that this process is always restarted
   PollingStations = polling_stations(List),
   Children = PollingStations++[CentralStation],
@@ -44,24 +43,18 @@ init(_Args) -> % TODO this is copy pasted from AuctionHandler!!
   %% to the 'supervisor' module.
   {ok, {SupFlags, Children}}.
 
+% fill the polling_stations_list, assign nodes and IDs
 polling_stations(List)->polling_stations([],List, 1).
 
-% fill the polling_stations_list, assign nodes and IDs
 polling_stations(Ch,[], _)->
   Ch;
-%polling_stations(Ch, [Elem], N)->polling_stations(Ch, [Elem,[]], N);
+
 polling_stations(Ch,List, N)->
   [Head|Tail]=List,
   PS=#{id => Head,
     start => {pollingStation, start, [Head, N]},
     restart => permanent},
   polling_stations(Ch++[PS], Tail, N+1).
-
-startServices()->
-  Pid=spawn(centralStation,start,[]),
-  register(central_station_endpoint, Pid),
-  PsPid=spawn(pollingStation,start,[Pid]),
-  register(polling_station_endpoint, PsPid).
 
 
 

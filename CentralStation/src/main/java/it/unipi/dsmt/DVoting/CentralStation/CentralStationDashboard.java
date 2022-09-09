@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
+/**
+ * java dashboard for central station
+ */
 public class CentralStationDashboard {
 
     private static Map<String, Integer> countVotes(DatabaseManager db, PrivateKey pk){
@@ -54,20 +57,19 @@ public class CentralStationDashboard {
             System.out.println("cookie: " + cookie);
             System.out.println("TmBox: " + mBox);
             if (n.pingCS()) {
-                System.out.println(nodeId+" is up.");
+                System.out.println("erlang node is up.");
             } else {
-                System.out.println(nodeId+" is down");
+                System.out.println("erlang node is down");
             }
             PrivateKey pk;
-            InputStream filePath=CentralStationDaemon.class.getResourceAsStream("/cs_keys/cs_key.pem");
-            //System.out.println(filePath);
-            //File privateKeyFile = new File(filePath); // private key file in PEM format
-            pk= Crypto.getPrivateKey(filePath);
+            String pkPath="/cs_keys/cs_key.pem";
+            System.out.println("private key at: "+pkPath);
+            InputStream fileStream=CentralStationDaemon.class.getResourceAsStream(pkPath);
+            pk= Crypto.getPrivateKey(fileStream);
             if(pk==null){
-                System.out.println("pk null");
+                System.out.println("ERROR: private key not found");
                 return;
             }
-
             String DATABASE_NAME = "encVotes.db";
             DatabaseManager db = new DatabaseManager(DATABASE_NAME);
             if(!db.connect() || !db.createVotesTable()){

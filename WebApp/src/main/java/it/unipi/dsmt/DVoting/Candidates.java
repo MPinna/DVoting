@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * singleton implementation of candidates list
+ */
 public class Candidates {
 
     private static List<String> candidates=null;

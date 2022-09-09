@@ -5,7 +5,6 @@ import it.unipi.dsmt.DVoting.crypto.Crypto;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +16,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-
+/**
+ * servlet for admin access, authentication and actions
+ */
 @WebServlet(name = "AdminServlet", value = "/Admin")
 @MultipartConfig
 public class AdminServlet extends HttpServlet {
@@ -35,7 +36,7 @@ public class AdminServlet extends HttpServlet {
 
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if(!authenticateAdmin(request.getSession())){
             request.getSession().invalidate();
             response.sendRedirect(request.getContextPath());
@@ -107,7 +108,7 @@ public class AdminServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         request.getSession().invalidate();
         try {

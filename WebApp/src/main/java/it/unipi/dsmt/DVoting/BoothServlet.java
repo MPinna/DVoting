@@ -13,6 +13,9 @@ import java.io.PrintWriter;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
+/**
+ * servlet for voting expression and forwarding
+ */
 @WebServlet(name = "BoothServlet", value = "/Booth")
 public class BoothServlet extends HttpServlet {
     @Override
@@ -35,14 +38,10 @@ public class BoothServlet extends HttpServlet {
             n=new WebAppNetwork(request.getSession().getId());
             String vote = request.getParameter("vote");
             writer.println(vote);
-//        if(n.test())
-//            message = "<h1> OK </h1>";
-//        else
-//            message = "<h1> NOPE </h1>";
             PublicKey pk;
             pk= Crypto.getCsPublicKeyFromCertificate();
             writer.write("<h1> ok key </h1>");
-            byte[] cph=Crypto.encrypt(pk, vote.getBytes());
+            byte[] cph=Crypto.encrypt(pk, vote.getBytes()); // encrypt with cs public key
             // add voter ID and voter key signature for authentication
             PrivateKey pv = (PrivateKey) request.getSession().getAttribute("VoterKey");
             String voterID = (String) request.getSession().getAttribute("VoterID");
@@ -54,7 +53,6 @@ public class BoothServlet extends HttpServlet {
             e.printStackTrace();
         }
         request.getSession(false).invalidate();
-        //response.sendRedirect(request.getContextPath());
 
     }
 }
