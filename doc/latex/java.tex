@@ -1,0 +1,59 @@
+%-------------------------------------------------------------------------------
+% File: java.tex
+%
+% Author: Marco Pinna
+%         Created on 14/07/2022
+%-------------------------------------------------------------------------------
+\chapter{Java}\label{ch:java}
+The application comprises four Java modules with the following structure:
+\hfill \break
+\dirtree{%
+.1 DVoting.
+.2 CentralStation.
+.3 src/main/java/it.unipi.dsmt.dvoting.centralstation.
+.4 CentralStationDaemon.
+.4 CentralStationDashboard.
+.4 DatabaseManager.
+.4 VotesIterator.
+.2 network.
+.3 src/main/java/it.unipi.dsmt.dvoting.network.
+.4 Network.
+.2 WebApp.
+.3 src/main/java/it.unipi.dsmt.dvoting.
+.4 AccessServlet.java.
+.4 AdminServlet.java.
+.4 BoothServlet.java.
+.4 Candidates.java.
+.4 Voter.java.
+.4 WebAppNetwork.java.
+.2 crypto.
+.3 src/main/java/it.unipi.dsmt.dvoting.crypto.
+.4 Crypto.
+}
+\hfill \break
+
+\section*{CentralStation}\label{sec:centralstation}
+The \textbf{CentralStation} module runs on the central station and handles the sending and receiving of messages and the interaction with the \texttt{votes} database.\\
+\begin{itemize}
+	\item The \texttt{CentralStationDaemon} class is always running on the central station for the whole duration of the election. It takes care of receiving from the messages containing the encrypted votes from the polling stations and store them in the database.
+	\item The \texttt{CentralStationDashboard} class provides a dashboard meant to be used by the central station admin. It allows them to start/stop the central station daemon and to also get the turnout of the election.
+	\item The \texttt{DatabaseManager} class handles the interaction with the \texttt{Votes} database (cfr. \ref{ch:database}).\\
+	\item The \texttt{VotesIterator} class extends the \texttt{Iterator} Java util class and it is used when the election is closed and all the votes have to be retrieved from the \texttt{Votes} database.\\
+\end{itemize}
+
+\section*{Network}\label{sec:network}
+The \textbf{network} module is a utility module which provides to the Java classes the interface to interact with the Erlang modules. It uses the \texttt{com.ericsson.otp.erlang} Java package.
+
+\section*{WebApp}\label{sec:webapp}
+The \textbf{WebApp} module runs on each polling station server. 
+\begin{itemize}
+	\item The \texttt{AccessServlet} class handles the authentication of the voter when they enter the polling station.
+	\item The \texttt{AdminServlet} class implements all the administration-related functionalities: it authenticates and logs in the admin and allows them to perform management actions such as suspending, resuming or stopping the vote, search for a specific voter in the database or get the polling station turnout.
+	\item The \texttt{BoothServlet} class provides the web page that will be server to the voter when they enter the polling booth.
+	\item The \texttt{Candidates} class takes care of asking the official list of candidates to the central station and providing it to the voter in the polling booth.
+	\item The \texttt{Voter} class is used to retrieve the voter information stored in the \texttt{voter} Mnesia database (cfr. \ref{ch:database}).
+	\item The \texttt{WebAppNetwork} class extends the aforementioned \texttt{Network} class, adding functionalities necessary to the web app.
+\end{itemize}
+
+\section*{Crypto}\label{sec:crypto}
+The \textbf{crypto} module is a utility module which contains all the cryptography related function use to generate keys, encrypt, decrypt, sign, verify messages, etc.

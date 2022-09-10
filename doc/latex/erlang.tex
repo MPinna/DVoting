@@ -1,0 +1,31 @@
+%-------------------------------------------------------------------------------
+% File: erlang.tex
+%
+% Author: Marco Pinna
+%         Created on 14/07/2022
+%-------------------------------------------------------------------------------
+\chapter{Erlang}\label{ch:erlang}
+The application also includes the following Erlang modules:
+\hfill \break
+\dirtree{%
+.1 DVoting.
+.2 Erlang.
+.3 centralStation.erl.
+.3 pollingStation.erl.
+.3 monitor.erl.
+.3 util.erl.
+.3 seggio.erl.
+.3 voter.erl.
+}
+
+\begin{itemize}
+
+	\item \texttt{centralStation.erl} runs on the central station. It handles the messages received from the polling stations and verifies their signatures. It also replies to requests coming from the polling stations for the list of candidates.
+	\item \texttt{pollingStation.erl} runs on each polling station. Its main functionality is to receive the votes from the polling booths, verifying their integrity and authenticity with the voter's public key and updating the \textit{voter} database by setting the corresponding flag.\\
+	 It also implements some of the administration functionalities by handling admin commands such as suspend/resume/stop the vote etc.
+	 \item \texttt{monitor.erl} acts as a supervisor for the other modules TODO complete
+	 \item \texttt{util.erl} contains constants and utility functions.
+	 \item \texttt{seggio.erl} contains the functions necessary to interact with the polling station database.
+	 \item \texttt{voter.erl} contains the functions necessary to interact with the voters database.
+
+\end{itemize}
