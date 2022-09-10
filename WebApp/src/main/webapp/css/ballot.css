@@ -1,0 +1,50 @@
+html{
+    font-family: sans-serif;
+}
+
+form{
+    font-family: sans-serif;
+    height: 100%;
+
+    background-color: bisque;
+    border: double black;"
+
+    text-align: center;
+    padding: 5px;
+
+    border: 5px  solid darkgray;
+    margin: 10px auto;
+}
+
+fieldset{
+    border-radius: 15px;
+    height: 300px;
+}
+
+legend{
+    text-align: center;
+    margin: auto;
+    font-weight: bold;
+    font-size: x-large;
+    color: black;
+
+    padding: 10px 5px 5px;
+}
+
+input{
+    position: center;
+    margin: 5px;
+    height: 35px;
+    width: 90%;
+
+    background-color: #FFFFFF80;
+
+    font-size: x-large;
+}
+
+input[type="submit"]{
+    font-size: large;
+    width: 180px;
+    height: 60px;
+    background-color: #d3d3d3d3;
+}

@@ -1,0 +1,17 @@
+form{
+    font-family: sans-serif;
+    height: 100%;
+
+    background-color: grey;
+    border: double black;"
+
+    text-align: center;
+    padding: 5px;
+
+    border: 5px  solid darkgray;
+    margin: 10px auto;
+}
+
+fieldset{
+    height: 300px;
+}
