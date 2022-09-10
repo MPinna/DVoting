@@ -21,13 +21,6 @@
           <element id="library" level="project" name="Maven: org.bouncycastle:bcprov-jdk18on:1.71.1" />
           <element id="library" level="project" name="Maven: org.bouncycastle:bcpkix-jdk18on:1.71.1" />
           <element id="library" level="project" name="Maven: org.bouncycastle:bcutil-jdk18on:1.71.1" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.3" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.3" />
-          <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.3" />
-          <element id="archive" name="network-1.0-SNAPSHOT.jar">
-            <element id="module-output" name="network" />
-          </element>
-          <element id="library" level="project" name="Maven: clojang:erlang-jinterface:1.10-1" />
         </element>
       </element>
       <element id="directory" name="META-INF">

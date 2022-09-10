@@ -44,7 +44,6 @@ send_list(Admin) ->
   io:format("[ps ] list ~n sent ~p ~n",[Admin]).
 
 ps_loop(Key, N, Id) ->
-  %%Term = io:get_chars("prompt ", 5),
   receive
     {_, ok} ->ps_loop(Key,  N, Id);
     {_,suspend_vote}-> ps_suspended(Key,N, Id);
@@ -72,12 +71,12 @@ ps_loop(Key, N, Id) ->
         KeyUrl=voter:get_voter_pub_key_from_id(Nid),
         VoterKey = util:read_key(KeyUrl),
         true= public_key:verify(Vote,sha256, VoterSign,VoterKey),
-        io:format("[ps~w] vote certified ~n"),
+        io:format("[ps~w] vote certified ~n", [Id]),
         Term=term_to_binary({Vote, N}), % append sequence number
         Signature = public_key:sign(Term, sha256, Key),
         %Signature = crypto:sign(dss, sha256,Term, Key),
         {central_station_endpoint,cs@studente75} ! {Id, Signature, {Vote, N}},
-        io:format("[ps~w] vote sent ~n"),
+        io:format("[ps~w] vote sent ~n",[Id]),
         voter:set_voter_flag(Nid),
         ps_loop(Key,  N+1, Id)
         catch ErrorType:ErrorReason:Stacktrace ->
@@ -85,10 +84,10 @@ ps_loop(Key, N, Id) ->
           io:format("~w ~n ~w ~n ~w ~n",
             [ ErrorType,ErrorReason,Stacktrace]),
           ps_loop(Key,  N, Id) end;
-    _ -> io:format("[ps~w] unexpected message ~n"),
+    _ -> io:format("[ps~w] unexpected message ~n",[Id]),
       ps_loop(Key,  N, Id)
   end,
-  io:format("[ps~w] loop end ~n").
+  io:format("[ps~w] loop end ~n",[Id]).
 
 ps_suspended(Key,N, Id) ->
   io:format("[ps~w] vote suspended ~n", [Id]),

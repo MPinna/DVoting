@@ -54,7 +54,7 @@ cs_loop(PrvKey, N) ->
     {Sender,request_candidates} ->
       ok=send_candidates(Sender, PrvKey),
       cs_loop(PrvKey,N);
-    {_, close_vote} ->cs_stopped(); % TODO check sender pid=={cs, central@localhost} pid or use signed message
+    {_, close_vote} ->cs_stopped(); %
 
     _ -> io:format("[cs ] unexpected message ~n"),
       cs_loop(PrvKey, N)
@@ -62,8 +62,7 @@ cs_loop(PrvKey, N) ->
  io:format("[cs ] loop terminated \n").
 
 send_candidates(Sender, Key) ->
-  {ok, Msg} = file:read_file(util:basePath()++"candidates.txt"), % TODO verify if this works
-  %%Msg=list_to_binary("Tizio 1_Tizio 2"),
+  {ok, Msg} = file:read_file(util:basePath()++"candidates.txt"),
   Signature = public_key:sign(Msg, sha256, Key),
   Sender! {self(), Signature, Msg},
   io:format("[cs ] candidates list sended ~p ~n", [Sender]),
@@ -71,7 +70,7 @@ send_candidates(Sender, Key) ->
 
 cs_stopped() ->
   {cs, central@localhost} ! {self(),vote_closed},
-  io:format("[cs ] vote stoppped ~n"),
+  io:format("[cs ] vote stopped ~n"),
   receive
     {Sender,_} ->Sender !{self(), "stopped"},
       cs_stopped()
