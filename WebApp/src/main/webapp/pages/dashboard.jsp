@@ -18,7 +18,8 @@
         }
     </style>
 <head>
-    <title>Title</title>
+    <title>Admin Dashboard</title>
+    <link href="css/dashboard.css" rel="stylesheet" type="text/css">
 </head>
 <body> <%      // prevent access from unregistered users
     if(!AdminServlet.authenticateAdmin(request.getSession())) {

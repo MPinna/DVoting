@@ -9,7 +9,7 @@
 DVoting is a distributed electronic voting application that allows people to take part in a state election by going to the polling station, authenticating with personal ID and a smart-card, and expressing their vote on an electronic device in the polling booth.\\
 
 Figure \ref{fig:high_lev_arch} show a high level view of the application.\\
-When a voter enters the polling station, they authenticate and they enter the polling booth. In each polling booth there is an electronic device which is used to cast the vote. The voter authenticates with PGP in the polling booth and they are presented with a web page where they can express their voting preference. The vote is sent from the polling booth to the polling station, which takes care of marking that the voter has cast their vote.\\
+When a voter enters the polling station, they authenticate and they enter the polling booth. In each polling booth there is an electronic device which is used to cast the vote. The voter authenticates with private key in the polling booth and they are presented with a web page where they can express their voting preference. The vote is sent from the polling booth to the polling station, which takes care of marking that the voter has cast their vote.\\
 The vote is then forwarded to the central station, where it is stored in an encrypted database until the end of the election. The central station also takes care of counting all the votes and computing the outcome of the election.\\
 
 \begin{figure}
@@ -30,7 +30,7 @@ The following functional requirements have been identified:
 \subsection*{Voter}
 \begin{itemize}
 	\setlength\itemsep{1pt}
-	\item An anonymous user should be able to login to the platform via PGP authentication.
+	\item An anonymous user should be able to login to the platform via private key authentication.
 	\item A logged user should be able to express their voting preference via web UI on the electronic device present in the polling station.
 \end{itemize}
 
@@ -67,6 +67,6 @@ The application was designed to ensure security aspects which are to be guarante
 	\item Privacy and vote secrecy have been ensured by means of asymmetric encryption
 	\item Double voting prevention is ensured by keeping track in a database of who voted and who did not.
 	\item Anonymity and unlinkability are guaranteed by ``splitting" the vote and the voter identity once the former is sent to the central station
-	\item Authentication is ensured by face recognition upon entering the polling station and via PGP authentication.
+	\item Authentication is ensured by face recognition upon entering the polling station and via private key authentication.
 	\item Authenticity is achieved via digital signature algorithm
 \end{itemize}

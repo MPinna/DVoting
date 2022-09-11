@@ -24,10 +24,16 @@ The database only consists of one table, \texttt{votes}, whose schema is the fol
     \label{fig:votes_schema}
 \end{figure}
 The interaction with this database is handled by the \texttt{DatabaseManager} Java class which offers an interface to perform CRUD operations.\\
-The module that interact with the \texttt{votes} database are the \texttt{CentralStationDaemon} to add the votes to the database and the \texttt{CentralStationDashboard} to obtain the election turnout. %TODO check if something is missing
-An example of how the table might appear during the election is the following:
+The module that interact with the \texttt{votes} database are the \texttt{CentralStationDaemon} to add the votes to the database and the \texttt{CentralStationDashboard} to obtain the election turnout.
 
-TODO: add example of database
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.5]{img/votes_db_screen.png}
+    \end{center}
+    \vspace*{-0.5cm}
+    \caption{Example of the \texttt{votes} table.}
+    \label{fig:votes_db}
+\end{figure}
 
 \section{Polling stations database}\label{sec:polling_stations_db}
 The \texttt{polling stations} database is a Mnesia database located on the central node. It stores the information related to each polling station.\\
@@ -42,14 +48,22 @@ The database only consists of one table, \texttt{pollingStation}, whose schema i
     \label{fig:pollingstation_schema}
 \end{figure}
 
-It is worth noting that ``Mnesia tables \textit{have no built-in type constraints}, as long as you respect the tuple structure of the table iteslf."\footnote{\textit{Learn you some Erlang for great good},Fred Hébert, 2013, p. 514.}.\\
+It is worth noting that ``Mnesia tables \textit{have no built-in type constraints}, as long as you respect the tuple structure of the table iteslf."\footnote{\textit{Learn you some Erlang for great good}, Fred Hébert, 2013, p. 514.}.\\
 The schema of this table is specified in the Erlang header file \texttt{pollingStation.hrl} while \texttt{pollingStation.erl} offers functions to interact with it, e.g. to add a polling station to the database or to retrieve a polling station public key given its id.\\
-An example of how the table might appear during the election is the following:
+Both in the \textit{polling stations} database and in the \textit{voter} database - shown in the next section- , the \textit{public key} column actually contains a URI with the path of the public key in the local file system.\\
 
-TODO: add example of database
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.6]{img/pollingstation_db_screen.png}
+    \end{center}
+    \vspace*{-0.5cm}
+    \caption{Example of the \texttt{pollingStation} table.}
+    \label{fig:pollingStations_db}
+\end{figure}
 
 \section{Voter database}\label{sec:voters_db}
 A \texttt{voter} Mnesia database is located on each one of the polling station nodes. Each of them stores the information related to every voter who is registered to that polling station.\\
+Each of the \texttt{voter} database in every polling station is supposed to be already populated with the personal information of all the eligible voters by the time the election begins .
 The database only consists of one table, \texttt{voter}, whose schema is the following:\\
 \
 \begin{figure}[H]
@@ -62,6 +76,12 @@ The database only consists of one table, \texttt{voter}, whose schema is the fol
 \end{figure}
 
 The schema of this table is specified in the Erlang header file \texttt{voter.hrl} while \texttt{voter.erl} offers functions to interact with it, e.g. to add a voter to the database, to retrieve a voter's public key given their id or to set the flag \texttt{has\_voted} to \textit{true} once the voter has cast their vote.\\
-An example of how the table might appear during the election is the following:
 
-TODO: add example of database
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=0.6]{img/voter_db_screen.png}
+    \end{center}
+    \vspace*{-0.5cm}
+    \caption{Example of the \texttt{voter} table.}
+    \label{fig:voter_db}
+\end{figure}

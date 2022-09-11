@@ -11,6 +11,7 @@ This chapter analyses in greater detail the architecture of the application, sho
 
 When a voter enters the polling station, the personnel in charge authenticates them via face recognition and personal documents. After checking that the voter is registered to that polling station, they are allowed to enter the polling booth.\\ The voter authenticates themselves again inside the voting booth with an electronic document, such as an electronic identity card. On each polling booth there is a Tomcat instance running, which will serve the web page on which the voter will express their vote.\\
 The voters' electronic document will also contain the private key of the voter ($Priv_{vot\_i}$), which will be used to sign the packet containing the vote; the packet signature will be verified on the polling station upon reception with the corresponding voter's public key ($Pub_{vot\_i}$) contained in the \textit{voter} database, to guarantee authenticity and integrity of the vote.\\
+\pagebreak
 The vote, before being sent over the local network to the polling station server, is encrypted with the public key of the central station ($Pub_{CS}$). The polling station, therefore, is not able to decrypt the vote cast by the voter, and vote secrecy is thus ensured.\\
 Once the polling station receives the voter's vote, it sets their corresponding flag \texttt{has\_voted} in the \textit{voter} database to \texttt{true}, to prevent double voting. At this point, the polling station node ``splits" the voter id from the vote and only sends the latter, after signing it with its own private key ($Priv_{PS\_j}$). This ensures the unlinkability of the vote.\\
 The central station receives the packet containing the vote, signed by the polling station, and verifies said signature using the corresponding polling station public key ($Pub_{PS\_j}$) which is contained in the \textit{pollingStation} database.\\
@@ -25,4 +26,28 @@ Lastly, the vote is saved in the \textit{votes} database in encrypted form. When
     \label{fig:arch_detail}
 \end{figure}
 
-\section{Packets structure}
+\section{Cryptographic scheme}
+The whole application was designed to be secure by design from the beginning.\\
+In particular, the \textit{elliptic-curve cryptography} (ECC) approach was chosen over RSA because its algorithms are more efficient and yield the same level of security with shorter keys.\\
+
+The two main critical types of packets are the ones containing the vote, which are sent firstly by the polling booth to the polling station and then by the polling station to the central station.\\
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=1]{img/packet1.pdf}
+    \end{center}
+    \vspace*{-0.5cm}
+    \caption{Structure of the \textit{vote} packet sent from the polling booth to the polling station.}
+    \label{fig:packet1}
+\end{figure}
+
+\begin{figure}[H]
+    \begin{center}
+        \includegraphics[scale=1]{img/packet2.pdf}
+    \end{center}
+    \vspace*{-0.5cm}
+    \caption{Structure of the \textit{vote} packet sent from the polling station  to the central station.}
+    \label{fig:packet2}
+\end{figure}
+
+Some additional simplifying hypotheses concerning the security of the operations were made, e.g. further security measures are implemented at network level (firewalls, VPNs, etc.) to prevent packet tampering and sniffing.

@@ -30,8 +30,7 @@ The application comprises four Java modules with the following structure:
 .3 src/main/java/it.unipi.dsmt.dvoting.crypto.
 .4 Crypto.
 }
-\hfill \break
-
+\pagebreak
 \section*{CentralStation}\label{sec:centralstation}
 The \textbf{CentralStation} module runs on the central station and handles the sending and receiving of messages and the interaction with the \texttt{votes} database.\\
 \begin{itemize}
@@ -56,4 +55,6 @@ The \textbf{WebApp} module runs on each polling station server.
 \end{itemize}
 
 \section*{Crypto}\label{sec:crypto}
-The \textbf{crypto} module is a utility module which contains all the cryptography related function use to generate keys, encrypt, decrypt, sign, verify messages, etc.
+The \textbf{crypto} module is a utility module which contains all the cryptography related function use to generate keys, encrypt, decrypt, sign, verify messages, etc.\\
+Most of cryptography-related functionalities have been implemented using the \texttt{bouncycastle} Java library, which extends the \texttt{javax.crypto} library by implementing additional schemes and protocols such as PEM and ECIES (\textit{Elliptical Curve Integrated Encryption Scheme}).\\
+The curve used by default by the application is the \textit{secp256r1}, but a different one can be chosen (such as \textit{brainpoolP384r1}) by simply changing one line of code in the module.

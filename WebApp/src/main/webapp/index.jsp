@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Start Page</title>
+    <title>Login</title>
     <link href="css/index.css" rel="stylesheet" type="text/css">
 </head>
 <body>

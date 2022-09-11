@@ -1,17 +1,88 @@
-form{
-    font-family: sans-serif;
+html{
+    font-family: "Microsoft YaHei Light", sans-serif;
     height: 100%;
+    margin: auto;
 
-    background-color: grey;
-    border: double black;"
+    background-color: lightblue;
+}
+
+form{
+    position: center;
+    height: 700px;
+
+    border-radius: 15px;
 
     text-align: center;
     padding: 5px;
 
     border: 5px  solid darkgray;
-    margin: 10px auto;
+    margin-bottom: 10px;
+    margin-top: 10px;
+
+    background: lightgrey;
+}
+
+#status{
+    height: 40px;
 }
 
 fieldset{
-    height: 300px;
+
+    border-radius: 15px;
+    border: 5px slategray solid;
+    height: 75%;
+}
+
+input{
+    position: center;
+    margin: 5px;
+    height: 100px;
+    width: 90%;
+
+    background-color: #FFFFFF80;
+
+    font-size: xxx-large;
+}
+
+input[type="submit"]{
+    font-size: xx-large;
+    width: 180px;
+    height: 60px;
+    background-color: #d3d3d3d3;
+}
+
+input[type="text"]{
+    background-color: #FFFFFF80;
+}
+
+
+#fieldSetResult{
+height: 50%;
+}
+
+legend{
+    text-align: center;
+    margin: auto;
+    font-weight: bold;
+    font-size: xx-large;
+    color: midnightblue;
+
+    padding: 10px 5px 5px;
+}
+
+table{
+    position: center;
+    margin: auto;
+
+    width: 100%;
+
+    font-size: xxx-large;
+
+
+
+    font-family: "Microsoft YaHei Light";
+}
+
+td{
+    text-align: center;
 }

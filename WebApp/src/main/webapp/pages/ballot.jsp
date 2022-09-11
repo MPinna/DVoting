@@ -13,7 +13,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Ballot</title>
+    <link href="css/ballot.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <form style="
@@ -23,7 +24,7 @@
     border: double black;"
     action="<%=request.getContextPath()%>/Booth" method="post" onsubmit="return confirm('close ballot?')">
     <fieldset>
-        <legend> choose a candidate</legend>
+        <legend> Choose a candidate</legend>
 
         <%      // prevent access from unregistered users
             if(!AccessServlet.authenticateUser(request.getSession())) {
