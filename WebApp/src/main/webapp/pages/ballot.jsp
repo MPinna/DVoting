@@ -11,17 +11,19 @@
 
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<!DOCTYPE html>
 <html>
 <head>
     <title>Ballot</title>
-    <link href="css/ballot.css" rel="stylesheet" type="text/css">
+    <link href="<%=request.getContextPath()%>/css/ballot.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<form style="
-    height: 600px;
-    width: 900px;
-    background-color: bisque;
-    border: double black;"
+<form
+<%--        style="--%>
+<%--    height: 600px;--%>
+<%--    width: 900px;--%>
+<%--    background-color: bisque;--%>
+<%--    border: double black;"--%>
     action="<%=request.getContextPath()%>/Booth" method="post" onsubmit="return confirm('close ballot?')">
     <fieldset>
         <legend> Choose a candidate</legend>
@@ -34,9 +36,7 @@
 //            requestDispatcher.forward(request, response);
             }
             else{
-            List<String> candidates=new ArrayList<>();
-//            candidates.add("Giulio Andreotti");
-//            candidates.add("Bettino Craxi");
+            List<String> candidates;
             candidates= Candidates.getCandidates(request.getSession().getId());
             if(candidates == null){
             %> impossible to retrieve candidates list <%
@@ -44,12 +44,12 @@
             }
             for (String candidate :candidates) {
         %>
-        <input type="button" value="<%=candidate%>" onclick="document.getElementById('vote').setAttribute('value',this.value)">
+        <input type="button" value="<%=candidate%>" onclick="document.getElementById('vote').value=this.value ">
 
         <%  }  } %>
 
     </fieldset>
-    <input type="text" value="" id="vote" name="vote">
+    <input type="text" value="" id="vote" name="vote" >
     <input type="submit" value="SEND VOTE" id="send">
 
 

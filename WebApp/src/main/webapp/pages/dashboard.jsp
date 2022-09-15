@@ -11,15 +11,15 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
-    <style>
+   <%-- <style>
         table, th, td {
             border: 1px solid black;
             border-collapse: collapse;
         }
-    </style>
+    </style>--%>
 <head>
     <title>Admin Dashboard</title>
-    <link href="css/dashboard.css" rel="stylesheet" type="text/css">
+    <link href="<%=request.getContextPath()%>/css/dashboard.css" rel="stylesheet" type="text/css">
 </head>
 <body> <%      // prevent access from unregistered users
     if(!AdminServlet.authenticateAdmin(request.getSession())) {
