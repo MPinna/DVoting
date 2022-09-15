@@ -22,8 +22,9 @@ public class AccessServlet  extends HttpServlet {
      */
     public static boolean authenticateUser(HttpSession session){
         try {
-            session.getAttribute("VoterKey");
-            session.getAttribute("VoterID");
+            if(session.getAttribute("VoterKey")==null || session.getAttribute("VoterID")==null)
+                return false;
+//            System.out.println("ACC:"+session.getAttribute("VoterKey")+" "+session.getAttribute("VoterID"));
         }catch (Exception e){
             e.printStackTrace();
             return false;

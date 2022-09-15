@@ -295,6 +295,7 @@ public  class Crypto {
         SHA256Digest d= new SHA256Digest();
         d.update(s.getBytes(), 0, s.getBytes().length);
         byte[] result = new byte[d.getDigestSize()];
+        d.doFinal(result,0);
         return Hex.toHexString(result);
     }
 

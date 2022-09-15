@@ -79,7 +79,8 @@ public class AdminServlet extends HttpServlet {
     }
     public static boolean authenticateAdmin(HttpSession session) {
         try {
-            session.getAttribute("Admin");
+            if(session.getAttribute("Admin")==null)
+                return false;
         }catch (Exception e){
             e.printStackTrace();
             return false;
@@ -119,7 +120,8 @@ public class AdminServlet extends HttpServlet {
             JSONParser jsonParser = new JSONParser();
             JSONObject obj = (JSONObject) jsonParser.parse(new InputStreamReader(is));
 
-            if (obj.get("name").equals(adminName) && obj.get("password").equals(adminPassword)){
+            if (!obj.get("name").equals(adminName) || !obj.get("password").equals(adminPassword)){
+
                 throw new IllegalAccessException("admin name or password are incorrect");
             }
             request.getSession().setAttribute("Admin", adminName);
