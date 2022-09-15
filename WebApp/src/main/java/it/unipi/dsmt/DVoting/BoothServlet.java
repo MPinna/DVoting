@@ -20,38 +20,44 @@ import java.security.PublicKey;
 public class BoothServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String targetJSP = "/pages/index.jsp";
+        String targetJSP = "index.jsp";
         RequestDispatcher requestDispatcher = request.getRequestDispatcher(targetJSP);
         requestDispatcher.forward(request, response);
 
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("DoPost PollingStation");
-
+        PrintWriter writer = response.getWriter();
         try {
-            PrintWriter writer = response.getWriter();
-            String message = "<html><body><h1> JAVA </h1></body></html>";
+
+            String message = "<head>\n" +
+                    "    <meta charset=\"UTF-8\">\n" +
+                    "    <title>Login</title>\n" +
+                    "    <link href=\"css/index.css\" rel=\"stylesheet\" type=\"text/css\">\n" +
+                    "</head>";
             writer.write(message);
             WebAppNetwork n;
             n=new WebAppNetwork(request.getSession().getId());
             String vote = request.getParameter("vote");
-            writer.println(vote);
             PublicKey pk;
             pk= Crypto.getCsPublicKeyFromCertificate();
-            writer.write("<h1> ok key </h1>");
             byte[] cph=Crypto.encrypt(pk, vote.getBytes()); // encrypt with cs public key
+            writer.write("<h1> your vote has been correctly encrypted </h1>");
             // add voter ID and voter key signature for authentication
             PrivateKey pv = (PrivateKey) request.getSession().getAttribute("VoterKey");
             String voterID = (String) request.getSession().getAttribute("VoterID");
             byte[] sign=Crypto.sign(pv,cph);
             n.sendSigned(cph,voterID,sign, "vote");
-            writer.println("vote sent");
+            writer.println("<h1> your vote has been correctly sent </h1>");
+            writer.println("<a href="+request.getContextPath()+"> click here to exit </a>");
             writer.close();
         } catch (Exception e) {
+            writer.println("something went wrong, contact administrator");
             e.printStackTrace();
         }
+        writer.println("<a href="+request.getContextPath()+"> exit </a>");
         request.getSession(false).invalidate();
 
     }
